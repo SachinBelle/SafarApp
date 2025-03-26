@@ -6,36 +6,47 @@ class SignUpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenHeight = MediaQuery.of(context).size.height;
     // final double screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFFCFDEF6),
-        
+
         body: SingleChildScrollView(
           child: Column(
-          
             children: [
-              SizedBox(height: 30,),
+              SizedBox(height: 30),
               SizedBox(
-            height: 80,
-            child: Image.asset('assets/photos/logo3.png')),
+                height: 80,
+                child: Image.asset('assets/photos/logo3.png'),
+              ),
               Padding(
-                padding: const EdgeInsets.only(left: 20,right: 20,top: 0,bottom: 0),
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 0,
+                  bottom: 0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 30),
                     const Text(
                       "Sign Up",
-                      style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const Text(
                       "As",
-                      style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 40),
-              
+
                     // Sign-Up Options
                     SignUpOption(
                       icon: "assets/photos/studentParent.webp",
@@ -51,26 +62,30 @@ class SignUpPage extends StatelessWidget {
                       onTap: () {
                         print("Driver Sign Up");
                       },
-                    ),]
-                ),),
-                     // Reduced space
-              
-                    // Bus Animation
-                    SizedBox(
-                      width: double.infinity,
-                      child: Lottie.asset(
-                        'assets/animations/Busa.json',
-                             width: double.infinity,  // 80% of screen width
-                      height: screenHeight * 0.3, // 30% of screen height// Adjusted for better visibility
-                        fit: BoxFit.contain,
-                      ),
                     ),
-                   
                   ],
                 ),
+              ),
+              // Reduced space
+
+              // Bus Animation
+              SizedBox(
+                width: double.infinity,
+                child: Lottie.asset(
+                  'assets/animations/Busa.json',
+                  width: double.infinity, // 80% of screen width
+                  height:
+                      screenHeight *
+                      0.3, // 30% of screen height// Adjusted for better visibility
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    );}
+    );
+  }
 }
 
 class SignUpOption extends StatelessWidget {
@@ -105,7 +120,6 @@ class SignUpOption extends StatelessWidget {
         child: Row(
           children: [
             ClipRRect(
-              
               borderRadius: BorderRadius.circular(8),
               child: Image.asset(
                 icon,

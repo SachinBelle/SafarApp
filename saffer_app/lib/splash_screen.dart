@@ -20,14 +20,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     // Initialize animation controller
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     );
 
     // Start animation
     _animationController.forward();
 
     // Navigate to SignUpPage after 4 seconds
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const SignUpPage()),
