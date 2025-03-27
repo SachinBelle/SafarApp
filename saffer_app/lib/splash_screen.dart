@@ -20,14 +20,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     // Initialize animation controller
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     );
 
     // Start animation
     _animationController.forward();
 
-    // Navigate to SignUpPage after 4 seconds
-    Timer(const Duration(seconds: 2), () {
+    // Navigate to SignUpPage after 3 seconds
+    Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const SignUpPage()),
@@ -45,53 +45,72 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFCFDEF6),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Spacer(),
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              shape: BoxShape.circle,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Circular logo with gradient color
+            Container(
+              width: 120,
+              height: 120,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Color(0xFF6A11CB), Color(0xFF2575FC)], // Purple to blue gradient
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  "S", // Example letter inside the circle
+                  style: TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: 7.5),
-          const Center(
-            child: Text(
+            const SizedBox(height: 15),
+
+            // App title
+            const Text(
               "SAFAR",
               style: TextStyle(
-                fontSize: 32,
+                fontSize: 40,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
             ),
-          ),
-          const Text(
-            "No more Suffer",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
-            ),
-          ),
-          const Spacer(),
-          const SizedBox(height: 20),
 
-          // Lottie Animation
-          SizedBox(
-            width: double.infinity,
-            height: 300,
-            child: Lottie.asset(
-              'assets/animations/splash_screen.json',
-              fit: BoxFit.contain,
-              repeat: false,
-              controller: _animationController, // Connect controller
+            // Tagline
+            const Text(
+              "No more Suffer",
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 30),
+
+            // Lottie Animation
+            SizedBox(
+              width: double.infinity,
+              height: 300,
+              child: Lottie.asset(
+                'assets/animations/splash_screen.json',
+                fit: BoxFit.contain,
+                repeat: false,
+                controller: _animationController, // Connect controller
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
