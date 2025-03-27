@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
-import 'package:saffer_app/sign_upPage.dart';
+import 'package:saffer_app/sign_up_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,14 +21,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     // Initialize animation controller
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     );
 
     // Start animation
     _animationController.forward();
 
     // Navigate to SignUpPage after 4 seconds
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const SignUpPage()),
