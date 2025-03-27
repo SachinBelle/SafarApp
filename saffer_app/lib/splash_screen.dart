@@ -7,6 +7,7 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SplashScreenState createState() => _SplashScreenState();
 }
 
@@ -20,14 +21,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     // Initialize animation controller
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
     );
 
     // Start animation
     _animationController.forward();
 
     // Navigate to SignUpPage after 4 seconds
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 1), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const SignUpPage()),
@@ -62,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
             child: Text(
               "SAFAR",
               style: TextStyle(
-                fontSize: 32,
+                fontSize: 40,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),

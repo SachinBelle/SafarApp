@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:saffer_app/student/parent_signup.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
@@ -10,7 +11,7 @@ class SignUpPage extends StatelessWidget {
     // final double screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color(0xFFCFDEF6),
+        backgroundColor: Theme.of(context).colorScheme.primary,
 
         body: SingleChildScrollView(
           child: Column(
@@ -52,7 +53,9 @@ class SignUpPage extends StatelessWidget {
                       icon: "assets/photos/studentParent.webp",
                       label: "Student/Parent",
                       onTap: () {
-                        print("Student Sign Up");
+                        Navigator.of(context).push(MaterialPageRoute(builder: (contex){
+                          return UserSignUp();
+                        }));
                       },
                     ),
                     const SizedBox(height: 20),
