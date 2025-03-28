@@ -38,10 +38,9 @@ class SignUpPage extends StatelessWidget {
                         fontSize: 48,
                         fontFamily: 'AlbertSans',
                         fontWeight: FontWeight.bold,
-
                       ),
                     ),
-                   
+
                     const SizedBox(height: 40),
 
                     // Sign-Up Options
@@ -135,7 +134,11 @@ class SignUpOption extends StatelessWidget {
             Text(
               label,
 
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold,fontFamily: 'AlbertSans',),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'AlbertSans',
+              ),
             ),
           ],
         ),
