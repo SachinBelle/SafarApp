@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -19,40 +20,18 @@ class _UserSignUpState extends State<UserSignUp> {
   final FocusNode _phoneFocusNode = FocusNode();
   final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
 
-  bool _isNameFocused = false;
-  bool _isPhoneFocused = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _nameFocusNode.addListener(() {
-      setState(() {
-        _isNameFocused = _nameFocusNode.hasFocus;
-      });
-    });
-
-    _phoneFocusNode.addListener(() {
-      setState(() {
-        _isPhoneFocused = _phoneFocusNode.hasFocus;
-      });
-    });
-  }
-
   @override
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
     _nameFocusNode.dispose();
     _phoneFocusNode.dispose();
-
     for (var controller in _otpControllers) {
       controller.dispose();
     }
     for (var focusNode in _otpFocusNodes) {
       focusNode.dispose();
     }
-
     super.dispose();
   }
 
@@ -79,15 +58,15 @@ class _UserSignUpState extends State<UserSignUp> {
               controller: _nameController,
               label: "Name Of User",
               focusNode: _nameFocusNode,
-              isFocused: _isNameFocused,
+              capitalizeFirstLetter: true,
             ),
             const SizedBox(height: 20),
             _buildFloatingTextField(
               controller: _phoneController,
               label: "Phone Number",
               focusNode: _phoneFocusNode,
-              isFocused: _isPhoneFocused,
               keyboardType: TextInputType.number,
+              maxLength: 10,
             ),
             const SizedBox(height: 30),
             const Center(
@@ -113,7 +92,7 @@ class _UserSignUpState extends State<UserSignUp> {
                     decoration: InputDecoration(
                       counterText: '',
                       filled: true,
-                      fillColor: const Color.fromARGB(141, 255, 255, 255),
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -132,13 +111,6 @@ class _UserSignUpState extends State<UserSignUp> {
                     },
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Center(
-              child: Text(
-                "Enter OTP sent to your phone number",
-                style: TextStyle(fontSize: 14),
               ),
             ),
             const SizedBox(height: 20),
@@ -171,57 +143,54 @@ class _UserSignUpState extends State<UserSignUp> {
     );
   }
 
-  // Floating TextField Widget (Text stays inside the box)
   Widget _buildFloatingTextField({
     required TextEditingController controller,
     required String label,
     required FocusNode focusNode,
-    required bool isFocused,
     TextInputType keyboardType = TextInputType.text,
+    int? maxLength,
+    bool capitalizeFirstLetter = false,
   }) {
-    return Stack(
-      children: [
-        Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(141, 255, 255, 255),
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 5,
-                blurRadius: 20,
-              ),
-            ],
-          ),
-          child: Center(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              keyboardType: keyboardType,
-              style: const TextStyle(fontSize: 20),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 20),
-              ),
-            ),
-          ),
+    return TextField(
+      controller: controller,
+      focusNode: focusNode,
+      keyboardType: keyboardType,
+      maxLength: maxLength,
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      inputFormatters:
+          maxLength != null
+              ? [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(maxLength),
+              ]
+              : null,
+      onChanged: (text) {
+        if (capitalizeFirstLetter && text.isNotEmpty) {
+          controller.value = controller.value.copyWith(
+            text: text[0].toUpperCase() + text.substring(1),
+            selection: TextSelection.collapsed(offset: text.length),
+          );
+        }
+      },
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
-        Positioned(
-          left: 20,
-          top: isFocused ? 5 : 20,
-          child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 200),
-            style: TextStyle(
-              fontSize: isFocused ? 12 : 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-            child: Text(label),
-          ),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide.none,
         ),
-      ],
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 20,
+        ),
+        counterText: '',
+      ),
     );
   }
 }
