@@ -8,6 +8,8 @@ class UserSignUp extends StatefulWidget {
 }
 
 class _UserSignUpState extends State<UserSignUp> {
+  TextEditingController nameController=TextEditingController();
+  TextEditingController phoneNumberController=TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
