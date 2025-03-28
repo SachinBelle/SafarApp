@@ -11,7 +11,7 @@ class SignUpPage extends StatelessWidget {
     // final double screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: const Color(0xFFCFDEF6),
 
         body: SingleChildScrollView(
           child: Column(
@@ -49,9 +49,13 @@ class SignUpPage extends StatelessWidget {
                       icon: "assets/photos/studentParent.webp",
                       label: "Student/Parent",
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (contex){
-                          return UserSignUp();
-                        }));
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return UserSignUp();
+                            },
+                          ),
+                        );
                       },
                     ),
                     const SizedBox(height: 20),
