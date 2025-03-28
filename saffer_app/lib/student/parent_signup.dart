@@ -102,7 +102,7 @@ class _UserSignUpState extends State<UserSignUp> {
               label: "Phone Number",
               focusNode: _phoneFocusNode,
               isFocused: _isPhoneFocused,
-              keyboardType: TextInputType.phone,
+              keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 30),
             const Center(
