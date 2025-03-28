@@ -12,18 +12,15 @@ class _UserSignUpState extends State<UserSignUp> {
   final TextEditingController _phoneController = TextEditingController();
   final List<TextEditingController> _otpControllers = List.generate(
     6,
-    (index) => TextEditingController(),
+    (_) => TextEditingController(),
   );
-  final List<FocusNode> _otpFocusNodes = List.generate(
-    6,
-    (index) => FocusNode(),
-  );
-
-  bool _isNameFocused = false;
-  bool _isPhoneFocused = false;
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
+  final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
+
+  bool _isNameFocused = false;
+  bool _isPhoneFocused = false;
 
   @override
   void initState() {
@@ -31,43 +28,31 @@ class _UserSignUpState extends State<UserSignUp> {
 
     _nameFocusNode.addListener(() {
       setState(() {
-        _isNameFocused =
-            _nameFocusNode.hasFocus || _nameController.text.isNotEmpty;
+        _isNameFocused = _nameFocusNode.hasFocus;
       });
     });
 
     _phoneFocusNode.addListener(() {
       setState(() {
-        _isPhoneFocused =
-            _phoneFocusNode.hasFocus || _phoneController.text.isNotEmpty;
+        _isPhoneFocused = _phoneFocusNode.hasFocus;
       });
     });
-
-    for (int i = 0; i < 6; i++) {
-      _otpControllers[i].addListener(() {
-        if (_otpControllers[i].text.isNotEmpty && i < 3) {
-          FocusScope.of(context).requestFocus(_otpFocusNodes[i + 1]);
-        }
-      });
-
-      _otpFocusNodes[i].addListener(() {
-        if (!_otpFocusNodes[i].hasFocus && _otpControllers[i].text.isEmpty) {
-          setState(() {});
-        }
-      });
-    }
   }
 
   @override
   void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
     _nameFocusNode.dispose();
     _phoneFocusNode.dispose();
+
     for (var controller in _otpControllers) {
       controller.dispose();
     }
     for (var focusNode in _otpFocusNodes) {
       focusNode.dispose();
     }
+
     super.dispose();
   }
 
@@ -76,7 +61,7 @@ class _UserSignUpState extends State<UserSignUp> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: const Color(0xFFCFDEF6),
         title: const Text(
           "SAFAR",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 48),

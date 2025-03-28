@@ -33,19 +33,15 @@ class SignUpPage extends StatelessWidget {
                   children: [
                     const SizedBox(height: 30),
                     const Text(
-                      "Sign Up",
+                      "Sign Up\nAs",
                       style: TextStyle(
                         fontSize: 48,
+                        fontFamily: 'AlbertSans',
                         fontWeight: FontWeight.bold,
+
                       ),
                     ),
-                    const Text(
-                      "As",
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                   
                     const SizedBox(height: 40),
 
                     // Sign-Up Options
@@ -138,7 +134,8 @@ class SignUpOption extends StatelessWidget {
             const SizedBox(width: 15),
             Text(
               label,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold,fontFamily: 'AlbertSans',),
             ),
           ],
         ),
