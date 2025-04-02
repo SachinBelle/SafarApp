@@ -21,6 +21,14 @@ class _UserSignUpState extends State<UserSignUp> {
   final FocusNode _phoneFocusNode = FocusNode();
   final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
 
+  bool isSendOtpEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _phoneController.addListener(_validatePhoneNumber);
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -34,6 +42,12 @@ class _UserSignUpState extends State<UserSignUp> {
       focusNode.dispose();
     }
     super.dispose();
+  }
+
+  void _validatePhoneNumber() {
+    setState(() {
+      isSendOtpEnabled = _phoneController.text.length == 10;
+    });
   }
 
   @override
@@ -56,7 +70,7 @@ class _UserSignUpState extends State<UserSignUp> {
           children: [
             Center(
               child: Lottie.asset(
-                'assets/signup_animation.json', // Ensure this file is in assets
+                'assets/animations/signup_animation.json',
                 height: 200,
                 width: 200,
                 fit: BoxFit.contain,
@@ -70,55 +84,19 @@ class _UserSignUpState extends State<UserSignUp> {
             ),
             const SizedBox(height: 20),
             _buildPhoneNumberField(),
-            const SizedBox(height: 30),
-            const Center(
-              child: Text(
-                "Verify Phone Number",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-            ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(
-                6,
-                (index) => SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: TextField(
-                    controller: _otpControllers[index],
-                    focusNode: _otpFocusNodes[index],
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    maxLength: 1,
-                    decoration: InputDecoration(
-                      counterText: '',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      if (value.isNotEmpty && index < 5) {
-                        FocusScope.of(
-                          context,
-                        ).requestFocus(_otpFocusNodes[index + 1]);
-                      } else if (value.isEmpty && index > 0) {
-                        FocusScope.of(
-                          context,
-                        ).requestFocus(_otpFocusNodes[index - 1]);
-                      }
-                    },
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed:
+                    isSendOtpEnabled
+                        ? () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("OTP Sent Successfully!"),
+                            ),
+                          );
+                        }
+                        : null,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
@@ -127,10 +105,13 @@ class _UserSignUpState extends State<UserSignUp> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor: const Color.fromARGB(141, 94, 99, 237),
+                  backgroundColor:
+                      isSendOtpEnabled
+                          ? const Color.fromARGB(255, 2, 35, 248)
+                          : Colors.grey, // Change color when enabled
                 ),
                 child: const Text(
-                  "RESEND",
+                  "SEND OTP",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -138,6 +119,15 @@ class _UserSignUpState extends State<UserSignUp> {
                 ),
               ),
             ),
+            const SizedBox(height: 30),
+            const Center(
+              child: Text(
+                "Verify Phone Number",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+            _buildOtpFields(),
             const SizedBox(height: 40),
           ],
         ),
@@ -154,6 +144,17 @@ class _UserSignUpState extends State<UserSignUp> {
       controller: controller,
       focusNode: focusNode,
       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      inputFormatters: [
+        TextInputFormatter.withFunction((oldValue, newValue) {
+          if (newValue.text.isEmpty) return newValue;
+          String capitalized =
+              newValue.text[0].toUpperCase() + newValue.text.substring(1);
+          return TextEditingValue(
+            text: capitalized,
+            selection: TextSelection.collapsed(offset: capitalized.length),
+          );
+        }),
+      ],
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(
@@ -181,7 +182,7 @@ class _UserSignUpState extends State<UserSignUp> {
       decoration: const InputDecoration(
         prefixText: "+91 ",
         prefixStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        labelText: "Enter Your Number",
+        labelText: "Phone Number",
         labelStyle: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
@@ -194,6 +195,35 @@ class _UserSignUpState extends State<UserSignUp> {
           borderSide: BorderSide(color: Colors.black, width: 2),
         ),
         counterText: '',
+      ),
+    );
+  }
+
+  Widget _buildOtpFields() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(
+        6,
+        (index) => SizedBox(
+          width: 50,
+          height: 50,
+          child: TextField(
+            controller: _otpControllers[index],
+            focusNode: _otpFocusNodes[index],
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.number,
+            maxLength: 1,
+            decoration: InputDecoration(
+              counterText: '',
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -30,6 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutterfx_widgets:
+    git:
+      url: https://github.com/flutterfx/flutterfx_widgets.git
+      ref: main 
+  shimmer: ^3.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -64,7 +69,6 @@ flutter:
   assets:
     - assets/photos/
     - assets/animations/
-    - assets/animations/signup_animation.json
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
