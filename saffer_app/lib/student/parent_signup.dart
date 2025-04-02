@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -53,21 +54,22 @@ class _UserSignUpState extends State<UserSignUp> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30), // Added space to prevent overlap
-            _buildFloatingTextField(
+            Center(
+              child: Lottie.asset(
+                'assets/signup_animation.json', // Ensure this file is in assets
+                height: 200,
+                width: 200,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(height: 30),
+            _buildUnderlineTextField(
               controller: _nameController,
               label: "Name Of User",
               focusNode: _nameFocusNode,
-              capitalizeFirstLetter: true,
             ),
             const SizedBox(height: 20),
-            _buildFloatingTextField(
-              controller: _phoneController,
-              label: "Phone Number",
-              focusNode: _phoneFocusNode,
-              keyboardType: TextInputType.number,
-              maxLength: 10,
-            ),
+            _buildPhoneNumberField(),
             const SizedBox(height: 30),
             const Center(
               child: Text(
@@ -136,42 +138,22 @@ class _UserSignUpState extends State<UserSignUp> {
                 ),
               ),
             ),
-            const Spacer(flex: 4),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFloatingTextField({
+  Widget _buildUnderlineTextField({
     required TextEditingController controller,
     required String label,
     required FocusNode focusNode,
-    TextInputType keyboardType = TextInputType.text,
-    int? maxLength,
-    bool capitalizeFirstLetter = false,
   }) {
     return TextField(
       controller: controller,
       focusNode: focusNode,
-      keyboardType: keyboardType,
-      maxLength: maxLength,
       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      inputFormatters:
-          maxLength != null
-              ? [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(maxLength),
-              ]
-              : null,
-      onChanged: (text) {
-        if (capitalizeFirstLetter && text.isNotEmpty) {
-          controller.value = controller.value.copyWith(
-            text: text[0].toUpperCase() + text.substring(1),
-            selection: TextSelection.collapsed(offset: text.length),
-          );
-        }
-      },
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(
@@ -179,15 +161,37 @@ class _UserSignUpState extends State<UserSignUp> {
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 15,
-          vertical: 20,
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhoneNumberField() {
+    return TextField(
+      controller: _phoneController,
+      focusNode: _phoneFocusNode,
+      keyboardType: TextInputType.number,
+      maxLength: 10,
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      decoration: const InputDecoration(
+        prefixText: "+91 ",
+        prefixStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        labelText: "Enter Your Number",
+        labelStyle: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
         ),
         counterText: '',
       ),
