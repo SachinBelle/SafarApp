@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'package:saffer_app/verify_opt.dart';
-=======
 import 'package:flutter/services.dart';
->>>>>>> 3dea360f11f4a2573c11e96ba4e7d7b0216d8f36
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -15,38 +11,6 @@ class UserSignUp extends StatefulWidget {
 class _UserSignUpState extends State<UserSignUp> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-<<<<<<< HEAD
-
-  final FocusNode _nameFocusNode = FocusNode();
-  final FocusNode _phoneFocusNode = FocusNode();
-  bool _isNameFocused = false;
-  bool _isPhoneFocused = false;
-  bool _isOtpSent = false;
-  bool _isButtonEnabled = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _nameFocusNode.addListener(() {
-      setState(() {
-        _isNameFocused = _nameFocusNode.hasFocus || _nameController.text.isNotEmpty;
-      });
-    });
-
-    _phoneFocusNode.addListener(() {
-      setState(() {
-        _isPhoneFocused = _phoneFocusNode.hasFocus || _phoneController.text.isNotEmpty;
-      });
-    });
-
-    _phoneController.addListener(() {
-      setState(() {
-        _isButtonEnabled = _phoneController.text.length == 10;
-      });
-    });
-  }
-=======
   final List<TextEditingController> _otpControllers = List.generate(
     6,
     (_) => TextEditingController(),
@@ -55,7 +19,6 @@ class _UserSignUpState extends State<UserSignUp> {
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
   final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
->>>>>>> 3dea360f11f4a2573c11e96ba4e7d7b0216d8f36
 
   @override
   void dispose() {
@@ -63,15 +26,12 @@ class _UserSignUpState extends State<UserSignUp> {
     _phoneController.dispose();
     _nameFocusNode.dispose();
     _phoneFocusNode.dispose();
-<<<<<<< HEAD
-=======
     for (var controller in _otpControllers) {
       controller.dispose();
     }
     for (var focusNode in _otpFocusNodes) {
       focusNode.dispose();
     }
->>>>>>> 3dea360f11f4a2573c11e96ba4e7d7b0216d8f36
     super.dispose();
   }
 
@@ -108,38 +68,6 @@ class _UserSignUpState extends State<UserSignUp> {
               keyboardType: TextInputType.number,
               maxLength: 10,
             ),
-<<<<<<< HEAD
-            const SizedBox(height: 25),
-            if (!_isOtpSent)
-              Center(
-                child: ElevatedButton(
-                  onPressed: _isButtonEnabled
-                      ? () {
-                          setState(() {
-                            _isOtpSent = true;
-                          });
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    backgroundColor: _isButtonEnabled
-                        ? const Color.fromARGB(141, 94, 99, 237)
-                        : Colors.grey,
-                  ),
-                  child: const Text(
-                    "Send OTP",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ),
-              ),
-            if (_isOtpSent)
-              Verify(
-                phoneNumber: _phoneController.text,
-                userName: _nameController.text,
-              ), // Render OTP verification UI
-            const SizedBox(height: 40), // Extra space at the bottom
-=======
             const SizedBox(height: 30),
             const Center(
               child: Text(
@@ -209,7 +137,6 @@ class _UserSignUpState extends State<UserSignUp> {
               ),
             ),
             const Spacer(flex: 4),
->>>>>>> 3dea360f11f4a2573c11e96ba4e7d7b0216d8f36
           ],
         ),
       ),
@@ -224,38 +151,6 @@ class _UserSignUpState extends State<UserSignUp> {
     int? maxLength,
     bool capitalizeFirstLetter = false,
   }) {
-<<<<<<< HEAD
-    return Stack(
-      children: [
-        Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(141, 255, 255, 255),
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(color: Colors.grey.withOpacity(0.2), spreadRadius: 5, blurRadius: 20),
-            ],
-          ),
-          child: Center(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              keyboardType: keyboardType,
-              style: const TextStyle(fontSize: 20),
-              decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.only(top: 20)),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 20,
-          top: isFocused ? 5 : 20,
-          child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 200),
-            style: TextStyle(fontSize: isFocused ? 12 : 20, fontWeight: FontWeight.bold, color: Colors.black),
-            child: Text(label),
-          ),
-=======
     return TextField(
       controller: controller,
       focusNode: focusNode,
@@ -289,7 +184,6 @@ class _UserSignUpState extends State<UserSignUp> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide.none,
->>>>>>> 3dea360f11f4a2573c11e96ba4e7d7b0216d8f36
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 15,
