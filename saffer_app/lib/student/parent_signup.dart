@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:saffer_app/verify_opt.dart';
+import 'package:lottie/lottie.dart';
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -12,30 +12,21 @@ class UserSignUp extends StatefulWidget {
 class _UserSignUpState extends State<UserSignUp> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final List<TextEditingController> _otpControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
+  final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
 
-  bool _isOtpSent = false;
-  bool _isButtonEnabled = false;
+  bool isSendOtpEnabled = false;
 
   @override
   void initState() {
     super.initState();
-
-    _nameFocusNode.addListener(() {
-      setState(() {});
-    });
-
-    _phoneFocusNode.addListener(() {
-      setState(() {});
-    });
-
-    _phoneController.addListener(() {
-      setState(() {
-        _isButtonEnabled = _phoneController.text.length == 10;
-      });
-    });
+    _phoneController.addListener(_validatePhoneNumber);
   }
 
   @override
@@ -44,7 +35,19 @@ class _UserSignUpState extends State<UserSignUp> {
     _phoneController.dispose();
     _nameFocusNode.dispose();
     _phoneFocusNode.dispose();
+    for (var controller in _otpControllers) {
+      controller.dispose();
+    }
+    for (var focusNode in _otpFocusNodes) {
+      focusNode.dispose();
+    }
     super.dispose();
+  }
+
+  void _validatePhoneNumber() {
+    setState(() {
+      isSendOtpEnabled = _phoneController.text.length == 10;
+    });
   }
 
   @override
@@ -65,48 +68,66 @@ class _UserSignUpState extends State<UserSignUp> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: Lottie.asset(
+                'assets/animations/signup_animation.json',
+                height: 200,
+                width: 200,
+                fit: BoxFit.contain,
+              ),
+            ),
             const SizedBox(height: 30),
-            _buildFloatingTextField(
+            _buildUnderlineTextField(
               controller: _nameController,
               label: "Name Of User",
               focusNode: _nameFocusNode,
-              capitalizeFirstLetter: true,
             ),
             const SizedBox(height: 20),
-            _buildFloatingTextField(
-              controller: _phoneController,
-              label: "Phone Number",
-              focusNode: _phoneFocusNode,
-              keyboardType: TextInputType.number,
-              maxLength: 10,
-            ),
-            const SizedBox(height: 25),
-            if (!_isOtpSent)
-              Center(
-                child: ElevatedButton(
-                  onPressed: _isButtonEnabled
-                      ? () {
-                          setState(() {
-                            _isOtpSent = true;
-                          });
+            _buildPhoneNumberField(),
+            const SizedBox(height: 10),
+            Center(
+              child: ElevatedButton(
+                onPressed:
+                    isSendOtpEnabled
+                        ? () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("OTP Sent Successfully!"),
+                            ),
+                          );
                         }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    backgroundColor: _isButtonEnabled ? const Color.fromARGB(141, 94, 99, 237) : Colors.grey,
+                        : null,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
                   ),
-                  child: const Text(
-                    "Send OTP",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  backgroundColor:
+                      isSendOtpEnabled
+                          ? const Color.fromARGB(255, 2, 35, 248)
+                          : Colors.grey, // Change color when enabled
+                ),
+                child: const Text(
+                  "SEND OTP",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
-            if (_isOtpSent)
-              Verify(
-                phoneNumber: _phoneController.text,
-                userName: _nameController.text,
+            ),
+            const SizedBox(height: 30),
+            const Center(
+              child: Text(
+                "Verify Phone Number",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
+            ),
+            const SizedBox(height: 10),
+            _buildOtpFields(),
             const SizedBox(height: 40),
           ],
         ),
@@ -114,63 +135,96 @@ class _UserSignUpState extends State<UserSignUp> {
     );
   }
 
-  Widget _buildFloatingTextField({
+  Widget _buildUnderlineTextField({
     required TextEditingController controller,
     required String label,
     required FocusNode focusNode,
-    TextInputType keyboardType = TextInputType.text,
-    int? maxLength,
-    bool capitalizeFirstLetter = false,
   }) {
-    bool isFocused = focusNode.hasFocus || controller.text.isNotEmpty;
+    return TextField(
+      controller: controller,
+      focusNode: focusNode,
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      inputFormatters: [
+        TextInputFormatter.withFunction((oldValue, newValue) {
+          if (newValue.text.isEmpty) return newValue;
+          String capitalized =
+              newValue.text[0].toUpperCase() + newValue.text.substring(1);
+          return TextEditingValue(
+            text: capitalized,
+            selection: TextSelection.collapsed(offset: capitalized.length),
+          );
+        }),
+      ],
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
+        ),
+        focusedBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
+        ),
+      ),
+    );
+  }
 
-    return Stack(
-      children: [
-        Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(141, 255, 255, 255),
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(color: Colors.grey.withOpacity(0.2), spreadRadius: 5, blurRadius: 20),
-            ],
-          ),
-          child: Center(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              keyboardType: keyboardType,
-              maxLength: maxLength,
-              style: const TextStyle(fontSize: 20),
-              inputFormatters: maxLength != null
-                  ? [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(maxLength),
-                    ]
-                  : null,
-              onChanged: (text) {
-                if (capitalizeFirstLetter && text.isNotEmpty) {
-                  controller.value = controller.value.copyWith(
-                    text: text[0].toUpperCase() + text.substring(1),
-                    selection: TextSelection.collapsed(offset: text.length),
-                  );
-                }
-              },
-              decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.only(top: 20)),
+  Widget _buildPhoneNumberField() {
+    return TextField(
+      controller: _phoneController,
+      focusNode: _phoneFocusNode,
+      keyboardType: TextInputType.number,
+      maxLength: 10,
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      decoration: const InputDecoration(
+        prefixText: "+91 ",
+        prefixStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        labelText: "Phone Number",
+        labelStyle: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.black, width: 2),
+        ),
+        counterText: '',
+      ),
+    );
+  }
+
+  Widget _buildOtpFields() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(
+        6,
+        (index) => SizedBox(
+          width: 50,
+          height: 50,
+          child: TextField(
+            controller: _otpControllers[index],
+            focusNode: _otpFocusNodes[index],
+            textAlign: TextAlign.center,
+            keyboardType: TextInputType.number,
+            maxLength: 1,
+            decoration: InputDecoration(
+              counterText: '',
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
         ),
-        Positioned(
-          left: 20,
-          top: isFocused ? 5 : 20,
-          child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 200),
-            style: TextStyle(fontSize: isFocused ? 12 : 20, fontWeight: FontWeight.bold, color: Colors.black),
-            child: Text(label),
-          ),
-        ),
-    ],
-);
-}
+      ),
+    );
+  }
 }

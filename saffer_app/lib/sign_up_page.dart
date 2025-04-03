@@ -8,26 +8,19 @@ class SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    // final double screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xFFCFDEF6),
-
         body: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               SizedBox(
                 height: 80,
                 child: Image.asset('assets/photos/logo3.png'),
               ),
               Padding(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 0,
-                  bottom: 0,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -40,18 +33,36 @@ class SignUpPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     const SizedBox(height: 40),
-
-                    // Sign-Up Options
                     SignUpOption(
                       icon: "assets/photos/studentParent.webp",
                       label: "Student/Parent",
                       onTap: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return UserSignUp();
+                          PageRouteBuilder(
+                            transitionDuration: const Duration(
+                              milliseconds: 500,
+                            ),
+                            reverseTransitionDuration: Duration(
+                              milliseconds: 200,
+                            ), // Disable transition when going back
+                            pageBuilder: (
+                              context,
+                              animation,
+                              secondaryAnimation,
+                            ) {
+                              return FadeTransition(
+                                opacity: Tween<double>(
+                                  begin: 0.0,
+                                  end: 1.0,
+                                ).animate(
+                                  CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeInOut,
+                                  ),
+                                ),
+                                child: UserSignUp(),
+                              );
                             },
                           ),
                         );
@@ -68,17 +79,12 @@ class SignUpPage extends StatelessWidget {
                   ],
                 ),
               ),
-              // Reduced space
-
-              // Bus Animation
               SizedBox(
                 width: double.infinity,
                 child: Lottie.asset(
                   'assets/animations/Busa.json',
-                  width: double.infinity, // 80% of screen width
-                  height:
-                      screenHeight *
-                      0.3, // 30% of screen height// Adjusted for better visibility
+                  width: double.infinity,
+                  height: screenHeight * 0.3,
                   fit: BoxFit.contain,
                 ),
               ),
@@ -133,7 +139,6 @@ class SignUpOption extends StatelessWidget {
             const SizedBox(width: 15),
             Text(
               label,
-
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
