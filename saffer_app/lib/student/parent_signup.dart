@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -22,10 +23,12 @@ class _UserSignUpState extends State<UserSignUp> {
   final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
 
   bool isSendOtpEnabled = false;
+  final supabase = Supabase.instance.client;
 
   @override
   void initState() {
     super.initState();
+    _phoneController.text = '+91';
     _phoneController.addListener(_validatePhoneNumber);
   }
 
@@ -46,8 +49,26 @@ class _UserSignUpState extends State<UserSignUp> {
 
   void _validatePhoneNumber() {
     setState(() {
-      isSendOtpEnabled = _phoneController.text.length == 10;
+      isSendOtpEnabled =
+          _phoneController.text.length == 13 &&
+          _phoneController.text.startsWith('+91');
     });
+  }
+
+  Future<void> _sendOtp() async {
+    try {
+      final response = await supabase.auth.signInWithOtp(
+        phone: _phoneController.text,
+        channel: OtpChannel.sms,
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("OTP Sent Successfully!")));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to send OTP: ${e.toString()}")),
+      );
+    }
   }
 
   @override
@@ -87,16 +108,7 @@ class _UserSignUpState extends State<UserSignUp> {
             const SizedBox(height: 10),
             Center(
               child: ElevatedButton(
-                onPressed:
-                    isSendOtpEnabled
-                        ? () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("OTP Sent Successfully!"),
-                            ),
-                          );
-                        }
-                        : null,
+                onPressed: isSendOtpEnabled ? _sendOtp : null,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
@@ -108,7 +120,7 @@ class _UserSignUpState extends State<UserSignUp> {
                   backgroundColor:
                       isSendOtpEnabled
                           ? const Color.fromARGB(255, 2, 35, 248)
-                          : Colors.grey, // Change color when enabled
+                          : Colors.grey,
                 ),
                 child: const Text(
                   "SEND OTP",
@@ -176,12 +188,14 @@ class _UserSignUpState extends State<UserSignUp> {
     return TextField(
       controller: _phoneController,
       focusNode: _phoneFocusNode,
-      keyboardType: TextInputType.number,
-      maxLength: 10,
+      keyboardType: TextInputType.phone,
+      maxLength: 13,
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\+91\d{0,10}$')),
+      ],
       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       decoration: const InputDecoration(
-        prefixText: "+91 ",
-        prefixStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        prefixText: "",
         labelText: "Phone Number",
         labelStyle: TextStyle(
           fontSize: 18,
