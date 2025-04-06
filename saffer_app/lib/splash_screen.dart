@@ -7,27 +7,24 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize animation controller
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
     );
 
-    // Start animation
     _animationController.forward();
 
-    // Navigate to SignUpPage after 4 seconds
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
@@ -38,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   @override
   void dispose() {
-    _animationController.dispose(); // Dispose controller to prevent memory leaks
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -50,29 +47,29 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Circular logo with gradient color
+            // ✅ Replaced circle with Safar logo image
             Container(
               width: 120,
               height: 120,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [Color(0xFF6A11CB), Color(0xFF2575FC)], // Purple to blue gradient
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  "S", // Example letter inside the circle
-                  style: TextStyle(
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/logo/safar.png', // path to your Safar logo
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
+
             const SizedBox(height: 15),
 
             // App title
@@ -85,7 +82,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
             ),
 
-            // Tagline
             const Text(
               "No more Suffer",
               style: TextStyle(
@@ -105,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 'assets/animations/splash_screen.json',
                 fit: BoxFit.contain,
                 repeat: false,
-                controller: _animationController, // Connect controller
+                controller: _animationController,
               ),
             ),
           ],
@@ -114,4 +110,3 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     );
   }
 }
-
