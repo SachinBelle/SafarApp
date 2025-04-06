@@ -51,7 +51,7 @@ class _VerifyState extends State<Verify> {
   }
 
   Future<void> _verifyOtp() async {
-    String otp = _otpControllers.map((e) => e.text).join(); // Fix here: Ensure it's a String
+    String otp = _otpControllers.map((e) => e.text).join();
     if (otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid 6-digit OTP')),
@@ -71,7 +71,7 @@ class _VerifyState extends State<Verify> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Verification successful!')),
         );
-        // Navigate to next screen
+        // Navigate to next screen if needed
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Invalid OTP, please try again')),
@@ -88,8 +88,8 @@ class _VerifyState extends State<Verify> {
     try {
       await supabase.from('user_data').upsert({
         'user_name': widget.userName,
-        'phone_number': widget.phoneNumber,
-      }, onConflict: 'phone_number');
+        'user_phone': widget.phoneNumber, // ✅ FIXED
+      }, onConflict: 'user_phone'); // ✅ FIXED
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Database Error: ${e.toString()}')),
@@ -101,7 +101,7 @@ class _VerifyState extends State<Verify> {
     try {
       await supabase.auth.signInWithOtp(
         phone: widget.phoneNumber,
-        channel: OtpChannel.sms, // Fix here: Use enum OtpChannel.sms
+        channel: OtpChannel.sms,
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('OTP resent successfully')),
@@ -192,7 +192,7 @@ class _VerifyState extends State<Verify> {
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.green,
                 ),
                 child: const Text(
                   "VERIFY",

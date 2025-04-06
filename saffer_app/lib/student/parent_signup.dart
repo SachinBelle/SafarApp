@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
@@ -13,17 +14,20 @@ class UserSignUp extends StatefulWidget {
 class _UserSignUpState extends State<UserSignUp> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final List<TextEditingController> _otpControllers = List.generate(
-    6,
-    (_) => TextEditingController(),
-  );
+  final List<TextEditingController> _otpControllers =
+      List.generate(6, (_) => TextEditingController());
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
   final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
 
-  bool isSendOtpEnabled = false;
   final supabase = Supabase.instance.client;
+
+  bool isSendOtpEnabled = false;
+  bool isOtpSectionVisible = false;
+  int _resendTimer = 60;
+  bool _isResendEnabled = false;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -38,12 +42,13 @@ class _UserSignUpState extends State<UserSignUp> {
     _phoneController.dispose();
     _nameFocusNode.dispose();
     _phoneFocusNode.dispose();
-    for (var controller in _otpControllers) {
-      controller.dispose();
+    for (var c in _otpControllers) {
+      c.dispose();
     }
-    for (var focusNode in _otpFocusNodes) {
-      focusNode.dispose();
+    for (var f in _otpFocusNodes) {
+      f.dispose();
     }
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -57,16 +62,97 @@ class _UserSignUpState extends State<UserSignUp> {
 
   Future<void> _sendOtp() async {
     try {
-      final response = await supabase.auth.signInWithOtp(
+      await supabase.auth.signInWithOtp(
         phone: _phoneController.text,
         channel: OtpChannel.sms,
       );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("OTP Sent Successfully!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("OTP Sent Successfully!")),
+      );
+
+      setState(() {
+        isOtpSectionVisible = true;
+        _resendTimer = 60;
+        _isResendEnabled = false;
+      });
+
+      _startResendTimer();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to send OTP: ${e.toString()}")),
+      );
+    }
+  }
+
+  void _startResendTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_resendTimer > 0) {
+        setState(() => _resendTimer--);
+      } else {
+        setState(() {
+          _isResendEnabled = true;
+          timer.cancel();
+        });
+      }
+    });
+  }
+
+  Future<void> _verifyOtp() async {
+    String otp = _otpControllers.map((e) => e.text).join();
+    if (otp.length != 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid 6-digit OTP')),
+      );
+      return;
+    }
+
+    try {
+      final response = await supabase.auth.verifyOTP(
+        phone: _phoneController.text,
+        token: otp,
+        type: OtpType.sms,
+      );
+
+      if (response.session != null) {
+        await supabase.from('user_data').upsert({
+          'user_name': _nameController.text,
+          'phone_number': _phoneController.text,
+        }, onConflict: 'phone_number');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Verification successful!')),
+        );
+        // Navigate to next screen if needed
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid OTP, please try again')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Verification failed: ${e.toString()}")),
+      );
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    try {
+      await supabase.auth.signInWithOtp(
+        phone: _phoneController.text,
+        channel: OtpChannel.sms,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("OTP resent successfully")),
+      );
+      setState(() {
+        _resendTimer = 60;
+        _isResendEnabled = false;
+      });
+      _startResendTimer();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to resend OTP: ${e.toString()}")),
       );
     }
   }
@@ -117,10 +203,9 @@ class _UserSignUpState extends State<UserSignUp> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor:
-                      isSendOtpEnabled
-                          ? const Color.fromARGB(255, 2, 35, 248)
-                          : Colors.grey,
+                  backgroundColor: isSendOtpEnabled
+                      ? const Color.fromARGB(255, 2, 35, 248)
+                      : Colors.grey,
                 ),
                 child: const Text(
                   "SEND OTP",
@@ -132,15 +217,66 @@ class _UserSignUpState extends State<UserSignUp> {
               ),
             ),
             const SizedBox(height: 30),
-            const Center(
-              child: Text(
-                "Verify Phone Number",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            if (isOtpSectionVisible) ...[
+              const Center(
+                child: Text(
+                  "Verify Phone Number",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            _buildOtpFields(),
-            const SizedBox(height: 40),
+              const SizedBox(height: 10),
+              _buildOtpFields(),
+              const SizedBox(height: 20),
+              Center(
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: _verifyOtp,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: Colors.green,
+                      ),
+                      child: const Text(
+                        "VERIFY",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _isResendEnabled ? _resendOtp : null,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor:
+                            _isResendEnabled ? Colors.blue : Colors.grey,
+                      ),
+                      child: const Text(
+                        "RESEND",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _isResendEnabled
+                          ? "You can resend now"
+                          : "Resend in $_resendTimer seconds",
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: _isResendEnabled ? Colors.green : Colors.red),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -227,6 +363,7 @@ class _UserSignUpState extends State<UserSignUp> {
             textAlign: TextAlign.center,
             keyboardType: TextInputType.number,
             maxLength: 1,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
               counterText: '',
               filled: true,
@@ -236,6 +373,15 @@ class _UserSignUpState extends State<UserSignUp> {
                 borderSide: BorderSide.none,
               ),
             ),
+            onChanged: (value) {
+              if (value.isNotEmpty && index < 5) {
+                FocusScope.of(context)
+                    .requestFocus(_otpFocusNodes[index + 1]);
+              } else if (value.isEmpty && index > 0) {
+                FocusScope.of(context)
+                    .requestFocus(_otpFocusNodes[index - 1]);
+              }
+            },
           ),
         ),
       ),
