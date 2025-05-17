@@ -26,7 +26,7 @@ class SignUpPage extends StatelessWidget {
                   children: [
                     const SizedBox(height: 30),
                     const Text(
-                      "Sign Up\nAs",
+                      "Sig Up\nAs",
                       style: TextStyle(
                         fontSize: 48,
                         fontFamily: 'AlbertSans',
