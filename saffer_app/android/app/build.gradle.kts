@@ -8,11 +8,8 @@ plugins {
 android {
     namespace = "com.example.saffer_app"
     compileSdk = flutter.compileSdkVersion
-<<<<<<< HEAD
-=======
 
     // ✅ Explicitly set NDK version to match dependencies
->>>>>>> 255cef0d7a42192b331428b4906f6e0f1da74eda
     ndkVersion = "27.0.12077973"
 
     compileOptions {
