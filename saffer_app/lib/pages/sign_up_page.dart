@@ -81,8 +81,8 @@ class SignUpPage extends StatelessWidget {
               ),
               SizedBox(
                 width: double.infinity,
-                child: Lottie.network(
-'https://putmfvonnimjvavnnbwm.supabase.co/storage/v1/object/public/assets/Animations/Busa.json',                  
+                child: Lottie.asset(
+'assets/animations/Bus_animation.json',                  
                   width: double.infinity,
                   height: screenHeight * 0.3,
                   fit: BoxFit.contain,

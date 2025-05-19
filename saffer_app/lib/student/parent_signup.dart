@@ -196,8 +196,8 @@ class _UserSignUpState extends State<UserSignUp> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Lottie.network(
-                    'https://putmfvonnimjvavnnbwm.supabase.co/storage/v1/object/public/assets/Animations/signup_animation.json',
+                  Lottie.asset(
+                    'assets/animations/signup_animation.json',
                     height: 200,
                     width: 200,
                     fit: BoxFit.contain,

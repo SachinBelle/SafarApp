@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:saffer_app/pages/loading_page.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:saffer_app/pages/splash_screen.dart';
 
