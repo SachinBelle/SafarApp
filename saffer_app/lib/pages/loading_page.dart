@@ -1,16 +1,19 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:saffer_app/global/global_assets.dart'; // Make sure this imports the global map
 
 class LoadingPage extends StatefulWidget {
   final String bucketName;
-  final String path;
+  final List<String> paths; // ✅ Multiple paths
   final VoidCallback onDataLoaded;
 
   const LoadingPage({
     super.key,
     required this.bucketName,
-    required this.path,
+    required this.paths,
     required this.onDataLoaded,
   });
 
@@ -26,29 +29,41 @@ class _LoadingPageState extends State<LoadingPage> with TickerProviderStateMixin
   void initState() {
     super.initState();
     _initAnimation();
-    _loadDataFromSupabase();
+    _loadAllPaths();
   }
 
   void _initAnimation() {
     _animationController = AnimationController(vsync: this);
   }
 
-  Future<void> _loadDataFromSupabase() async {
+  Future<void> _loadAllPaths() async {
     try {
-      final response = await Supabase.instance.client.storage
-          .from(widget.bucketName)
-          .list(path: widget.path);
+      final client = Supabase.instance.client;
 
-      // Simulate extra load time if needed
-      await Future.delayed(const Duration(seconds: 1));
+      for (final path in widget.paths) {
+        final response = await client.storage
+            .from(widget.bucketName)
+            .list(path: path);
 
-      if (mounted) {
-        widget.onDataLoaded(); // Navigate or update state
+        for (final file in response) {
+          final fullPath = '$path/${file.name}';
+          final publicUrl = client.storage
+              .from(widget.bucketName)
+              .getPublicUrl(fullPath);
+
+          // Store in global map
+          preloadedAssets[fullPath] = publicUrl as Uint8List;
+        }
       }
 
-      setState(() => _dataLoaded = true);
+      await Future.delayed(const Duration(seconds: 1)); // Optional wait
+
+      if (mounted) {
+        setState(() => _dataLoaded = true);
+        widget.onDataLoaded();
+      }
     } catch (e) {
-      print("Error loading from Supabase: $e");
+      print("Error loading Supabase paths: $e");
     }
   }
 

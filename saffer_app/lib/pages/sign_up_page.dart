@@ -17,7 +17,7 @@ class SignUpPage extends StatelessWidget {
               const SizedBox(height: 20),
               SizedBox(
                 height: 80,
-                child: Image.asset('assets/photos/logo3.png'),
+                child: Image.asset('assets/Avatars/logo3.png'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -35,7 +35,7 @@ class SignUpPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
                     SignUpOption(
-                      icon_url: "https://putmfvonnimjvavnnbwm.supabase.co/storage/v1/object/public/assets/Avatars/studentParent.webp",
+                      icon_url: "assets/Avatars/studentParent.webp",
                       label: "Student/Parent",
                       onTap: () {
                         Navigator.of(context).push(
@@ -70,7 +70,7 @@ class SignUpPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     SignUpOption(
-                      icon_url: "https://putmfvonnimjvavnnbwm.supabase.co/storage/v1/object/public/assets/Avatars/busDriver.png",
+                      icon_url: "assets/Avatars/busDriver.png",
                       label: "Transport Operator",
                       onTap: () {
                        
@@ -132,7 +132,7 @@ class SignUpOption extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
+              child: Image.asset(
                 icon_url,
                 width: 40,
                 height: 40,
