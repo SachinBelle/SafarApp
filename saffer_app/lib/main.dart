@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:saffer_app/splash_screen.dart';
+import 'package:saffer_app/pages/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // ✅ Ensure Flutter is ready before async calls
@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: const TextTheme(
           // Customize your text styles here if needed
+          titleMedium: TextStyle(fontWeight: FontWeight.bold,fontSize: 30,fontFamily:"AlbertSans"),
         ),
       ),
     );

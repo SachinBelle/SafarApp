@@ -2,7 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:saffer_app/common/methods/cmethods.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+final cmethod=cmethods();
+
+
+
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -12,13 +18,15 @@ class UserSignUp extends StatefulWidget {
 }
 
 class _UserSignUpState extends State<UserSignUp> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
   final List<TextEditingController> _otpControllers =
       List.generate(6, (_) => TextEditingController());
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
+ 
   final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
 
   final supabase = Supabase.instance.client;
@@ -32,14 +40,14 @@ class _UserSignUpState extends State<UserSignUp> {
   @override
   void initState() {
     super.initState();
-    _phoneController.text = '+91';
-    _phoneController.addListener(_validatePhoneNumber);
+     
+    phoneController.addListener(_validatePhoneNumber);
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
+    nameController.dispose();
+    phoneController.dispose();
     _nameFocusNode.dispose();
     _phoneFocusNode.dispose();
     for (var c in _otpControllers) {
@@ -54,20 +62,26 @@ class _UserSignUpState extends State<UserSignUp> {
 
   void _validatePhoneNumber() {
     setState(() {
-      isSendOtpEnabled =
-          _phoneController.text.length == 13 &&
-          _phoneController.text.startsWith('+91');
-    });
+        final isValid = phoneController.text.trim().length == 10;
+    isSendOtpEnabled = isValid;
+          if (!isValid) {
+      isOtpSectionVisible = false;
+      for (var controller in _otpControllers) {
+        controller.clear();
+      }
+          // &&
+          // _phoneController.text.startsWith('+91');
+    }});
   }
 
   Future<void> _sendOtp() async {
     try {
       await supabase.auth.signInWithOtp(
-        phone: _phoneController.text,
+        phone: "+91${phoneController.text}",
         channel: OtpChannel.sms,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("OTP Sent Successfully!")),
+        const SnackBar(content: Center(child: Text("OTP Sent Successfully!",style: TextStyle(color: Colors.green),))),
       );
 
       setState(() {
@@ -79,7 +93,7 @@ class _UserSignUpState extends State<UserSignUp> {
       _startResendTimer();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to send OTP: ${e.toString()}")),
+        SnackBar(content: Center(child: Text("Failed to send OTP: ${e.toString()}",style: TextStyle(color: Colors.red),))),
       );
     }
   }
@@ -102,36 +116,36 @@ class _UserSignUpState extends State<UserSignUp> {
     String otp = _otpControllers.map((e) => e.text).join();
     if (otp.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid 6-digit OTP')),
+        const SnackBar(content: Center(child: Text('Please enter a valid 6-digit OTP',style: TextStyle(color: Colors.red),),)),
       );
-      return;
+      return ;
     }
 
     try {
       final response = await supabase.auth.verifyOTP(
-        phone: _phoneController.text,
+        phone: "+91${phoneController.text}",
         token: otp,
         type: OtpType.sms,
       );
 
       if (response.session != null) {
         await supabase.from('user_data').upsert({
-          'user_name': _nameController.text,
-          'phone_number': _phoneController.text,
+          'user_name': nameController.text,
+          'phone_number': phoneController.text,
         }, onConflict: 'phone_number');
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Verification successful!')),
+          const SnackBar(content: Center(child: Text('Verification successful!',style: TextStyle(color:Colors.green ),))),
         );
         // Navigate to next screen if needed
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid OTP, please try again')),
+          const SnackBar(content: Center(child: Text('Invalid OTP, please try again',style:TextStyle(color: Colors.red),))),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Verification failed: ${e.toString()}")),
+        SnackBar(content: Center(child: Text("Verification failed: ${e.toString()}",style: TextStyle(color: Colors.red),))),
       );
     }
   }
@@ -139,11 +153,11 @@ class _UserSignUpState extends State<UserSignUp> {
   Future<void> _resendOtp() async {
     try {
       await supabase.auth.signInWithOtp(
-        phone: _phoneController.text,
+        phone: "+91${phoneController.text}",
         channel: OtpChannel.sms,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("OTP resent successfully")),
+        const SnackBar(content: Center(child: Text("OTP resent successfully",style: TextStyle(color:Colors.green ),))),
       );
       setState(() {
         _resendTimer = 60;
@@ -152,13 +166,16 @@ class _UserSignUpState extends State<UserSignUp> {
       _startResendTimer();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to resend OTP: ${e.toString()}")),
+        SnackBar(content: Center(child: Text("Failed to resend OTP: ${e.toString()}",style: TextStyle(color: Colors.red)))),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool formValidation(){
+  return cmethod.userformValidation(context, nameTED: nameController, phoneNumberTED: phoneController);
+}
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
@@ -176,17 +193,24 @@ class _UserSignUpState extends State<UserSignUp> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Lottie.asset(
-                'assets/animations/signup_animation.json',
-                height: 200,
-                width: 200,
-                fit: BoxFit.contain,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Lottie.network(
+                    'https://putmfvonnimjvavnnbwm.supabase.co/storage/v1/object/public/assets/Animations/signup_animation.json',
+                    height: 200,
+                    width: 200,
+                    fit: BoxFit.contain,
+                  ),
+                  Text("SignUp Parent/Student",style: Theme.of(context).textTheme.titleMedium,)
+                ],
               ),
             ),
             const SizedBox(height: 30),
+           
             _buildUnderlineTextField(
-              controller: _nameController,
-              label: "Name Of User",
+              controller: nameController,
+              label: "User Name",
               focusNode: _nameFocusNode,
             ),
             const SizedBox(height: 20),
@@ -231,17 +255,22 @@ class _UserSignUpState extends State<UserSignUp> {
                 child: Column(
                   children: [
                     ElevatedButton(
-                      onPressed: _verifyOtp,
+                      onPressed: (){
+                          if(formValidation()){
+                            _verifyOtp;
+                          }
+
+                      },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        backgroundColor: Colors.green,
+                        backgroundColor: const Color.fromARGB(255, 76, 175, 79),
                       ),
                       child: const Text(
-                        "VERIFY",
+                        "Sign up",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ),
@@ -288,63 +317,86 @@ class _UserSignUpState extends State<UserSignUp> {
     required String label,
     required FocusNode focusNode,
   }) {
-    return TextField(
-      controller: controller,
-      focusNode: focusNode,
-      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      inputFormatters: [
-        TextInputFormatter.withFunction((oldValue, newValue) {
-          if (newValue.text.isEmpty) return newValue;
-          String capitalized =
-              newValue.text[0].toUpperCase() + newValue.text.substring(1);
-          return TextEditingValue(
-            text: capitalized,
-            selection: TextSelection.collapsed(offset: capitalized.length),
-          );
-        }),
-      ],
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+    return Container(
+      // margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+         color: const Color.fromARGB(201, 232, 240, 239),
+        border: Border.all(
           color: Colors.black,
+          width: 2.0
+
         ),
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.black, width: 2),
-        ),
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.black, width: 2),
+        borderRadius: BorderRadius.circular(5)
+      ),
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        inputFormatters: [
+          TextInputFormatter.withFunction((oldValue, newValue) {
+            if (newValue.text.isEmpty) return newValue;
+            String capitalized =
+                newValue.text[0].toUpperCase() + newValue.text.substring(1);
+            return TextEditingValue(
+              text: capitalized,
+              selection: TextSelection.collapsed(offset: capitalized.length),
+            );
+          }),
+        ],
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+          enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 2),
+          ),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 2),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildPhoneNumberField() {
-    return TextField(
-      controller: _phoneController,
-      focusNode: _phoneFocusNode,
-      keyboardType: TextInputType.phone,
-      maxLength: 13,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^\+91\d{0,10}$')),
-      ],
-      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      decoration: const InputDecoration(
-        prefixText: "",
-        labelText: "Phone Number",
-        labelStyle: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+    return Container(
+       decoration: BoxDecoration(
+         color: const Color.fromARGB(201, 232, 240, 239),
+        border: Border.all(
           color: Colors.black,
+          width: 2.0
+
         ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.black, width: 2),
+        borderRadius: BorderRadius.circular(5)
+      ),
+      child: TextField(
+        controller: phoneController,
+        focusNode: _phoneFocusNode,
+        keyboardType: TextInputType.phone,
+        maxLength: 10,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        decoration: const InputDecoration(
+          prefixText: "",
+          labelText: "Phone Number",
+          labelStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 2),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 2),
+          ),
+          counterText: '',
         ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.black, width: 2),
-        ),
-        counterText: '',
       ),
     );
   }
