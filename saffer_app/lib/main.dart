@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:saffer_app/pages/loading_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:saffer_app/pages/splash_screen.dart';
 
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
+      
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 247, 248, 249),
@@ -30,6 +32,7 @@ class MyApp extends StatelessWidget {
         textTheme: const TextTheme(
           // Customize your text styles here if needed
           titleMedium: TextStyle(fontWeight: FontWeight.bold,fontSize: 30,fontFamily:"AlbertSans"),
+          titleSmall: TextStyle(fontWeight: FontWeight.bold,fontSize: 15,fontFamily: "AlbertSans"),
         ),
       ),
     );

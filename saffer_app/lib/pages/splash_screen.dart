@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
+import 'package:saffer_app/pages/loading_page.dart';
 import 'package:saffer_app/pages/sign_up_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -28,7 +29,9 @@ class _SplashScreenState extends State<SplashScreen>
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const SignUpPage()),
+        MaterialPageRoute(builder: (context) => LoadingPage(bucketName: 'assets', path: 'Animations', onDataLoaded: (){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const SignUpPage()));
+        })),
       );
     });
   }
