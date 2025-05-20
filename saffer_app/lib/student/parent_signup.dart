@@ -210,7 +210,7 @@ class _UserSignUpState extends State<UserSignUp> {
            
             _buildUnderlineTextField(
               controller: nameController,
-              label: "User Name",
+              label: "  User Name",
               focusNode: _nameFocusNode,
             ),
             const SizedBox(height: 20),
@@ -236,6 +236,7 @@ class _UserSignUpState extends State<UserSignUp> {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
+                    fontSize: 12
                   ),
                 ),
               ),
@@ -350,12 +351,12 @@ class _UserSignUpState extends State<UserSignUp> {
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
-          enabledBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2),
-          ),
-          focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2),
-          ),
+          // enabledBorder: const UnderlineInputBorder(
+          //   borderSide: BorderSide(color: Colors.black, width: 2),
+          // ),
+          // focusedBorder: const UnderlineInputBorder(
+          //   borderSide: BorderSide(color: Colors.black, width: 2),
+          // ),
         ),
       ),
     );
@@ -383,18 +384,18 @@ class _UserSignUpState extends State<UserSignUp> {
         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         decoration: const InputDecoration(
           prefixText: "",
-          labelText: "Phone Number",
+          labelText: "  Phone Number",
           labelStyle: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2),
-          ),
+          // enabledBorder: UnderlineInputBorder(
+          //   borderSide: BorderSide(color: Colors.black, width: 2),
+          // ),
+          // focusedBorder: UnderlineInputBorder(
+          //   borderSide: BorderSide(color: Colors.black, width: 2),
+          // ),
           counterText: '',
         ),
       ),
