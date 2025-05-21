@@ -88,8 +88,8 @@ class _VerifyState extends State<Verify> {
     try {
       await supabase.from('user_data').upsert({
         'user_name': widget.userName,
-        'user_phone': widget.phoneNumber, // ✅ FIXED
-      }, onConflict: 'user_phone'); // ✅ FIXED
+        'phone_number': widget.phoneNumber, // ✅ FIXED
+      }, onConflict: 'phone_number'); // ✅ FIXED
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Database Error: ${e.toString()}')),

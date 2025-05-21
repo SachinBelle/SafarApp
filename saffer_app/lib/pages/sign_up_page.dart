@@ -82,7 +82,7 @@ class SignUpPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: Lottie.asset(
-'assets/animations/Bus_animation.json',                  
+                'assets/animations/Bus_animation.json',                  
                   width: double.infinity,
                   height: screenHeight * 0.3,
                   fit: BoxFit.contain,

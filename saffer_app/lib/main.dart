@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:saffer_app/pages/splash_screen.dart';
 
-void main() async {
+void main() async { 
   WidgetsFlutterBinding.ensureInitialized(); // ✅ Ensure Flutter is ready before async calls
 
   await Supabase.initialize(

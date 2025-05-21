@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:saffer_app/common/methods/cmethods.dart';
+import 'package:saffer_app/pages/uid_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final cmethod=cmethods();
@@ -113,42 +114,72 @@ class _UserSignUpState extends State<UserSignUp> {
   }
 
   Future<void> _verifyOtp() async {
-    String otp = _otpControllers.map((e) => e.text).join();
-    if (otp.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Center(child: Text('Please enter a valid 6-digit OTP',style: TextStyle(color: Colors.red),),)),
-      );
-      return ;
-    }
-
-    try {
-      final response = await supabase.auth.verifyOTP(
-        phone: "+91${phoneController.text}",
-        token: otp,
-        type: OtpType.sms,
-      );
-
-      if (response.session != null) {
-        await supabase.from('user_data').upsert({
-          'user_name': nameController.text,
-          'phone_number': phoneController.text,
-        }, onConflict: 'phone_number');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Center(child: Text('Verification successful!',style: TextStyle(color:Colors.green ),))),
-        );
-        // Navigate to next screen if needed
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Center(child: Text('Invalid OTP, please try again',style:TextStyle(color: Colors.red),))),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Center(child: Text("Verification failed: ${e.toString()}",style: TextStyle(color: Colors.red),))),
-      );
-    }
+  String otp = _otpControllers.map((e) => e.text).join();
+  if (otp.length != 6) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Center(
+          child: Text('Please enter a valid 6-digit OTP', style: TextStyle(color: Colors.red)),
+        ),
+      ),
+    );
+    return;
   }
+
+  try {
+    final response = await supabase.auth.verifyOTP(
+      phone: "+91${phoneController.text}",
+      token: otp,
+      type: OtpType.sms,
+    );
+
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(child: Text('Verification failed', style: TextStyle(color: Colors.red))),
+        ),
+      );
+      return;
+    }
+
+    // Check if user already exists in the database
+    final existingUser = await supabase
+        .from('user_data')
+        .select()
+        .eq('phone_number', phoneController.text)
+        .maybeSingle();
+
+    if (existingUser == null) {
+      // User does not exist, insert new record
+      await supabase.from('user_data').insert({
+        'user_name': nameController.text,
+        'phone_number': phoneController.text,
+      });
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Center(
+          child: Text('Verification successful!', style: TextStyle(color: Colors.green)),
+        ),
+      ),
+    );
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => InitialUIDPage()),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Center(
+          child: Text("Verification failed: ${e.toString()}", style: TextStyle(color: Colors.red)),
+        ),
+      ),
+    );
+  }
+}
+
 
   Future<void> _resendOtp() async {
     try {
@@ -257,7 +288,7 @@ class _UserSignUpState extends State<UserSignUp> {
                     ElevatedButton(
                       onPressed: (){
                           if(formValidation()){
-                            _verifyOtp;
+                            _verifyOtp();
                           }
 
                       },
