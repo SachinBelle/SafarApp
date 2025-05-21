@@ -52,8 +52,8 @@ class _SplashScreenState extends State<SplashScreen>
           children: [
             // ✅ Replaced circle with Safar logo image
             Container(
-              width: 120,
-              height: 120,
+              width: 300,
+              height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
