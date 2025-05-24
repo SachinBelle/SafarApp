@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:saffer_app/pages/no_internet.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:saffer_app/pages/splash_screen.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
+    
       
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
