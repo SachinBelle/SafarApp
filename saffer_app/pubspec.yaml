@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_keyboard_visibility: ^5.4.1
  
   shimmer: ^3.0.0
 
@@ -39,6 +40,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   lottie: ^3.3.1
   supabase_flutter: ^2.8.4
+  shared_preferences:
+  get:
 
 dev_dependencies:
   flutter_test:
@@ -66,7 +69,8 @@ flutter:
   assets:
     - assets/Avatars/
     - assets/animations/
-    - assets/logo/
+    - assets/logo/slogo.png
+    - assets/logo/safarword.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -4,12 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:saffer_app/common/methods/cmethods.dart';
 import 'package:saffer_app/pages/uid_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:flutter/services.dart';
 
-final cmethod=cmethods();
-
-
-
+final cmethod = cmethods();
 
 class UserSignUp extends StatefulWidget {
   const UserSignUp({super.key});
@@ -22,12 +21,14 @@ class _UserSignUpState extends State<UserSignUp> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
 
-  final List<TextEditingController> _otpControllers =
-      List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _otpControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
- 
+
   final List<FocusNode> _otpFocusNodes = List.generate(6, (_) => FocusNode());
 
   final supabase = Supabase.instance.client;
@@ -41,7 +42,7 @@ class _UserSignUpState extends State<UserSignUp> {
   @override
   void initState() {
     super.initState();
-     
+
     phoneController.addListener(_validatePhoneNumber);
   }
 
@@ -63,16 +64,17 @@ class _UserSignUpState extends State<UserSignUp> {
 
   void _validatePhoneNumber() {
     setState(() {
-        final isValid = phoneController.text.trim().length == 10;
-    isSendOtpEnabled = isValid;
-          if (!isValid) {
-      isOtpSectionVisible = false;
-      for (var controller in _otpControllers) {
-        controller.clear();
+      final isValid = phoneController.text.trim().length == 10;
+      isSendOtpEnabled = isValid;
+      if (!isValid) {
+        isOtpSectionVisible = false;
+        for (var controller in _otpControllers) {
+          controller.clear();
+        }
+        // &&
+        // _phoneController.text.startsWith('+91');
       }
-          // &&
-          // _phoneController.text.startsWith('+91');
-    }});
+    });
   }
 
   Future<void> _sendOtp() async {
@@ -82,7 +84,14 @@ class _UserSignUpState extends State<UserSignUp> {
         channel: OtpChannel.sms,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Center(child: Text("OTP Sent Successfully!",style: TextStyle(color: Colors.green),))),
+        const SnackBar(
+          content: Center(
+            child: Text(
+              "OTP Sent Successfully!",
+              style: TextStyle(color: Colors.green),
+            ),
+          ),
+        ),
       );
 
       setState(() {
@@ -94,7 +103,14 @@ class _UserSignUpState extends State<UserSignUp> {
       _startResendTimer();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Center(child: Text("Failed to send OTP: ${e.toString()}",style: TextStyle(color: Colors.red),))),
+        SnackBar(
+          content: Center(
+            child: Text(
+              "Failed to send OTP: ${e.toString()}",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ),
       );
     }
   }
@@ -113,13 +129,16 @@ class _UserSignUpState extends State<UserSignUp> {
     });
   }
 
-  Future<void> _verifyOtp() async {
+ Future<void> _verifyOtp() async {
   String otp = _otpControllers.map((e) => e.text).join();
   if (otp.length != 6) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Center(
-          child: Text('Please enter a valid 6-digit OTP', style: TextStyle(color: Colors.red)),
+          child: Text(
+            'Please enter a valid 6-digit OTP',
+            style: TextStyle(color: Colors.red),
+          ),
         ),
       ),
     );
@@ -137,7 +156,12 @@ class _UserSignUpState extends State<UserSignUp> {
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Center(child: Text('Verification failed', style: TextStyle(color: Colors.red))),
+          content: Center(
+            child: Text(
+              'Verification failed',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
         ),
       );
       return;
@@ -158,22 +182,35 @@ class _UserSignUpState extends State<UserSignUp> {
       });
     }
 
+    // ✅ Store phone number in shared preferences
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    await sharedPreferences.setString(
+        'phone_number', phoneController.text);
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Center(
-          child: Text('Verification successful!', style: TextStyle(color: Colors.green)),
+          child: Text(
+            'Verification successful!',
+            style: TextStyle(color: Colors.green),
+          ),
         ),
       ),
     );
 
+    // ✅ Navigate to UIDPage
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => InitialUIDPage()),
+      MaterialPageRoute(builder: (context) => UIDPage()),
     );
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Center(
-          child: Text("Verification failed: ${e.toString()}", style: TextStyle(color: Colors.red)),
+          child: Text(
+            "Verification failed: ${e.toString()}",
+            style: TextStyle(color: Colors.red),
+          ),
         ),
       ),
     );
@@ -188,7 +225,14 @@ class _UserSignUpState extends State<UserSignUp> {
         channel: OtpChannel.sms,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Center(child: Text("OTP resent successfully",style: TextStyle(color:Colors.green ),))),
+        const SnackBar(
+          content: Center(
+            child: Text(
+              "OTP resent successfully",
+              style: TextStyle(color: Colors.green),
+            ),
+          ),
+        ),
       );
       setState(() {
         _resendTimer = 60;
@@ -197,32 +241,59 @@ class _UserSignUpState extends State<UserSignUp> {
       _startResendTimer();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Center(child: Text("Failed to resend OTP: ${e.toString()}",style: TextStyle(color: Colors.red)))),
+        SnackBar(
+          content: Center(
+            child: Text(
+              "Failed to resend OTP: ${e.toString()}",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    bool formValidation(){
-  return cmethod.userformValidation(context, nameTED: nameController, phoneNumberTED: phoneController);
-}
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark, // For dark icons
+  ));
+    bool formValidation() {
+      return cmethod.userformValidation(
+        context,
+        nameTED: nameController,
+        phoneNumberTED: phoneController,
+      );
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFCFDEF6),
-        title: const Text(
-          "SAFAR",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 48),
-        ),
-        centerTitle: true,
-        elevation: 3,
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: const Color(0xFFCFDEF6),
+      //   title: const Text(
+      //     "SAFAR",
+      //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 48),
+      //   ),
+      //   centerTitle: true,
+      //   elevation: 3,
+      // ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(30.0),
+        // padding: const EdgeInsets.all(30.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 22.5, top: 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  height: 150, // Slightly reduced height
+                      width: 200,
+                  child: Image.asset('assets/logo/safarword.png'),
+                ),
+              ),
+            ),
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -233,12 +304,15 @@ class _UserSignUpState extends State<UserSignUp> {
                     width: 200,
                     fit: BoxFit.contain,
                   ),
-                  Text("SignUp Parent/Student",style: Theme.of(context).textTheme.titleMedium,)
+                  Text(
+                    "SignUp Parent/Student",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 30),
-           
+            const SizedBox(height: 20),
+
             _buildUnderlineTextField(
               controller: nameController,
               label: "  User Name",
@@ -258,16 +332,17 @@ class _UserSignUpState extends State<UserSignUp> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor: isSendOtpEnabled
-                      ? const Color.fromARGB(255, 2, 35, 248)
-                      : Colors.grey,
+                  backgroundColor:
+                      isSendOtpEnabled
+                          ? const Color.fromARGB(255, 2, 35, 248)
+                          : Colors.grey,
                 ),
                 child: const Text(
                   "SEND OTP",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    fontSize: 12
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -287,15 +362,16 @@ class _UserSignUpState extends State<UserSignUp> {
                 child: Column(
                   children: [
                     ElevatedButton(
-                      onPressed: (){
-                          if(formValidation()){
-                            _verifyOtp();
-                          }
-
+                      onPressed: () {
+                        if (formValidation()) {
+                          _verifyOtp();
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 40, vertical: 15),
+                          horizontal: 40,
+                          vertical: 15,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -304,7 +380,9 @@ class _UserSignUpState extends State<UserSignUp> {
                       child: const Text(
                         "Sign up",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -312,7 +390,9 @@ class _UserSignUpState extends State<UserSignUp> {
                       onPressed: _isResendEnabled ? _resendOtp : null,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 40, vertical: 15),
+                          horizontal: 40,
+                          vertical: 15,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -322,7 +402,9 @@ class _UserSignUpState extends State<UserSignUp> {
                       child: const Text(
                         "RESEND",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -331,8 +413,9 @@ class _UserSignUpState extends State<UserSignUp> {
                           ? "You can resend now"
                           : "Resend in $_resendTimer seconds",
                       style: TextStyle(
-                          fontSize: 14,
-                          color: _isResendEnabled ? Colors.green : Colors.red),
+                        fontSize: 14,
+                        color: _isResendEnabled ? Colors.green : Colors.red,
+                      ),
                     ),
                   ],
                 ),
@@ -352,13 +435,9 @@ class _UserSignUpState extends State<UserSignUp> {
     return Container(
       // margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
-         color: const Color.fromARGB(201, 232, 240, 239),
-        border: Border.all(
-          color: Colors.black,
-          width: 2.0
-
-        ),
-        borderRadius: BorderRadius.circular(5)
+        color: const Color.fromARGB(201, 232, 240, 239),
+        border: Border.all(color: Colors.black, width: 2.0),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: TextField(
         controller: controller,
@@ -395,23 +474,17 @@ class _UserSignUpState extends State<UserSignUp> {
 
   Widget _buildPhoneNumberField() {
     return Container(
-       decoration: BoxDecoration(
-         color: const Color.fromARGB(201, 232, 240, 239),
-        border: Border.all(
-          color: Colors.black,
-          width: 2.0
-
-        ),
-        borderRadius: BorderRadius.circular(5)
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(201, 232, 240, 239),
+        border: Border.all(color: Colors.black, width: 2.0),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: TextField(
         controller: phoneController,
         focusNode: _phoneFocusNode,
         keyboardType: TextInputType.phone,
         maxLength: 10,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly,
-        ],
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         decoration: const InputDecoration(
           prefixText: "",
@@ -459,11 +532,9 @@ class _UserSignUpState extends State<UserSignUp> {
             ),
             onChanged: (value) {
               if (value.isNotEmpty && index < 5) {
-                FocusScope.of(context)
-                    .requestFocus(_otpFocusNodes[index + 1]);
+                FocusScope.of(context).requestFocus(_otpFocusNodes[index + 1]);
               } else if (value.isEmpty && index > 0) {
-                FocusScope.of(context)
-                    .requestFocus(_otpFocusNodes[index - 1]);
+                FocusScope.of(context).requestFocus(_otpFocusNodes[index - 1]);
               }
             },
           ),

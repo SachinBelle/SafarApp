@@ -14,26 +14,34 @@ class SignUpPage extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 20),
-              SizedBox(
-                height: 80,
-                child: Image.asset('assets/Avatars/logo3.png'),
+              const SizedBox(height: 0),
+              Padding(
+                padding: const EdgeInsets.only(left: 22.5, top: 0),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 150, // Slightly reduced height
+                      width: 200, // Slightly reduced width
+                      child: Image.asset('assets/logo/safarword.png'),
+                    ),
+                  ],
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 30),
+                    // const SizedBox(height: 10),
                     const Text(
                       "Sign Up\nAs",
                       style: TextStyle(
                         fontSize: 48,
                         fontFamily: 'AlbertSans',
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
                     SignUpOption(
                       icon_url: "assets/Avatars/studentParent.webp",
                       label: "Student/Parent",
@@ -72,9 +80,7 @@ class SignUpPage extends StatelessWidget {
                     SignUpOption(
                       icon_url: "assets/Avatars/busDriver.png",
                       label: "Transport Operator",
-                      onTap: () {
-                       
-                      },
+                      onTap: () {},
                     ),
                   ],
                 ),
@@ -82,13 +88,13 @@ class SignUpPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: Lottie.asset(
-                'assets/animations/Bus_animation.json',                  
+                  'assets/animations/Bus_animation.json',
                   width: double.infinity,
                   height: screenHeight * 0.3,
                   fit: BoxFit.contain,
-                   frameRate: FrameRate.max,
-                    repeat: true,
-                    animate: true,
+                  frameRate: FrameRate.max,
+                  repeat: true,
+                  animate: true,
                 ),
               ),
             ],
