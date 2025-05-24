@@ -52,8 +52,8 @@ class _SplashScreenState extends State<SplashScreen>
           children: [
             // ✅ Replaced circle with Safar logo image
             Container(
-              width: 300,
-              height: 300,
+              width: 100,
+              height: 100,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
@@ -67,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               child: ClipOval(
                 child: Image.asset(
-                  'assets/logo/safar.png', // path to your Safar logo
+                  'assets/logo/slogo.png', // path to your Safar logo
                   fit: BoxFit.cover,
                 ),
               ),

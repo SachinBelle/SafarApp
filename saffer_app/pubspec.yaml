@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_keyboard_visibility: ^5.4.1
  
   shimmer: ^3.0.0
 
@@ -66,7 +67,8 @@ flutter:
   assets:
     - assets/Avatars/
     - assets/animations/
-    - assets/logo/
+    - assets/logo/slogo.png
+    - assets/logo/safarword.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
