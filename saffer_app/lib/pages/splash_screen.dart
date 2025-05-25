@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:saffer_app/pages/uid_list_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:saffer_app/pages/uid_page.dart';
 import 'package:saffer_app/student/parent_signup.dart';
+ // import your UID list page
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,8 +18,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
-
-  String? phone;
 
   @override
   void initState() {
@@ -31,24 +32,60 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _initializeSplash() async {
-    // Start animation
-    _animationController.forward();
+    _animationController.forward(); // Start splash animation
 
-    // Fetch phone number from Supabase Auth session
+    final prefs = await SharedPreferences.getInstance();
+
     final user = Supabase.instance.client.auth.currentUser;
-    phone = user?.phone;
 
-    // Wait until animation is done
+    // Wait for the splash animation to finish
     await Future.delayed(_animationController.duration!);
 
-    // Navigate based on phone
     if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => phone != null ? const UIDPage() : UserSignUp(),
-      ),
-    );
+
+    if (user == null) {
+      // User not logged in
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => UserSignUp()),
+      );
+      return;
+    }
+
+    // User logged in, get phone (if needed)
+    final phone = user.phone;
+
+    // Fetch user_linked_uids from user_data table
+    try {
+      final response = await Supabase.instance.client
+          .from('user_data')
+          .select('user_linked_uids')
+          .eq('user_id', user.id)
+          .single();
+
+      final List<dynamic> linkedUids = response['user_linked_uids'];
+
+      if (linkedUids.isEmpty) {
+        // No UID saved → show initial UID page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const UIDPage()),
+        );
+      } else {
+        // UID(s) exist → show UID list page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const UidListPage()),
+        );
+      }
+    } catch (error) {
+      // Handle fetch error (fallback to UIDPage)
+      debugPrint('Error fetching user_linked_uids: $error');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const UIDPage()),
+      );
+    }
   }
 
   @override
