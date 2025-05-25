@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:saffer_app/pages/profile_page.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class UIDPage extends StatefulWidget {
   const UIDPage({super.key});
@@ -10,8 +13,10 @@ class UIDPage extends StatefulWidget {
 }
 
 class _UIDPageState extends State<UIDPage> {
-  final List<TextEditingController> _uidControllers =
-      List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _uidControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _uidFocusNodes = List.generate(6, (_) => FocusNode());
 
   int _selectedIndex = 1;
@@ -31,6 +36,13 @@ class _UIDPageState extends State<UIDPage> {
     setState(() {
       _selectedIndex = index;
     });
+
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const StudentProfilePage()),
+      );
+    }
   }
 
   @override
@@ -94,17 +106,17 @@ class _UIDPageState extends State<UIDPage> {
                         ),
                         child: Column(
                           children: [
-                            const Text(
+                             Text(
                               'No Saved Operator Found',
-                              style: TextStyle(
+                              style: GoogleFonts.albertSans(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
                               ),
                             ),
-                            const Text(
+                             Text(
                               'Enter UID To Add Operator',
-                              style: TextStyle(
+                               style: GoogleFonts.albertSans(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
@@ -120,13 +132,11 @@ class _UIDPageState extends State<UIDPage> {
                                 (index) => SingleChildScrollView(
                                   scrollDirection: Axis.horizontal,
                                   child: SizedBox(
-                                    width: 55,
-                                    height: 60,
+                                    width: 40,
+                                    height: 40,
                                     child: TextField(
                                       inputFormatters: [
-                                       
                                         UpperCaseTextFormatter(),
-
                                       ],
                                       controller: _uidControllers[index],
                                       focusNode: _uidFocusNodes[index],
@@ -137,25 +147,36 @@ class _UIDPageState extends State<UIDPage> {
                                       //   FilteringTextInputFormatter.digitsOnly,
                                       // ],
                                       style: const TextStyle(
-                                        fontSize: 24,
+                                        fontSize: 20,
                                         fontWeight: FontWeight.bold,
+                                        height: 1, // Adjusts vertical centering
                                       ),
                                       decoration: InputDecoration(
                                         counterText: '',
                                         filled: true,
                                         fillColor: Colors.white,
+                                        contentPadding: EdgeInsets.symmetric(
+                                          vertical: -5,
+                                          horizontal: 1,
+                                        ), // Ensures perfect vertical centering
+                                        // isDense:
+                                        //     true, // Makes the field more compact
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                           borderSide: BorderSide.none,
                                         ),
                                       ),
                                       onChanged: (value) {
                                         if (value.isNotEmpty && index < 5) {
                                           FocusScope.of(context).requestFocus(
-                                              _uidFocusNodes[index + 1]);
+                                            _uidFocusNodes[index + 1],
+                                          );
                                         } else if (value.isEmpty && index > 0) {
                                           FocusScope.of(context).requestFocus(
-                                              _uidFocusNodes[index - 1]);
+                                            _uidFocusNodes[index - 1],
+                                          );
                                         }
                                       },
                                     ),
@@ -164,12 +185,12 @@ class _UIDPageState extends State<UIDPage> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            const Padding(
+                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 20),
                               child: Text(
                                 'Contact your transport operator or organization to get UID',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                 style: GoogleFonts.albertSans(
                                   fontSize: 16,
                                   color: Colors.black54,
                                 ),
@@ -202,21 +223,22 @@ class _UIDPageState extends State<UIDPage> {
                           color: Colors.black26,
                           blurRadius: 10,
                           offset: Offset(0, -2),
-                        )
+                        ),
                       ],
                     ),
                     child: Center(
                       child: ElevatedButton(
                         onPressed: () {
-                          final uid =
-                              _uidControllers.map((c) => c.text).join();
+                          final uid = _uidControllers.map((c) => c.text).join();
                           if (uid.length == 6) {
                             // Process UID
                             print('Entered UID: $uid');
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Center(child: Text("Please enter full 6-digit UID")),
+                                content: Center(
+                                  child: Text("Please enter full 6-digit UID"),
+                                ),
                               ),
                             );
                           }
@@ -230,9 +252,9 @@ class _UIDPageState extends State<UIDPage> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const Text(
+                        child:  Text(
                           'SAVE THIS UID DRIVER',
-                          style: TextStyle(
+                           style: GoogleFonts.albertSans(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -248,49 +270,54 @@ class _UIDPageState extends State<UIDPage> {
 
       // Bottom Navigation Bar
       bottomNavigationBar: ClipRRect(
-  borderRadius: const BorderRadius.only(
-    topLeft: Radius.circular(35),
-    topRight: Radius.circular(35),
-  ),
-  child: BottomNavigationBar(
-    backgroundColor: const Color(0xFFE9E9E9),
-    currentIndex: _selectedIndex,
-    onTap: _onItemTapped,
-    selectedItemColor: Colors.black,
-    unselectedItemColor: Colors.black54,
-    selectedIconTheme: const IconThemeData(color: Colors.black),
-    selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-    type: BottomNavigationBarType.fixed,
-    items: [
-      _buildNavItem(Icons.notifications, 'NOTICE', 0),
-      _buildNavItem(Icons.location_on, 'LOCATE', 1),
-      _buildNavItem(Icons.person, 'PROFILE', 2),
-    ],
-  ),
-),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(35),
+          topRight: Radius.circular(35),
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: const Color(0xFFE9E9E9),
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black54,
+          selectedIconTheme: const IconThemeData(color: Colors.black),
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          type: BottomNavigationBarType.fixed,
+          items: [
+            _buildNavItem(Icons.notifications, 'NOTICE', 0),
+            _buildNavItem(Icons.location_on, 'LOCATE', 1),
+            _buildNavItem(Icons.person, 'PROFILE', 2),
+          ],
+        ),
+      ),
     );
   }
-  BottomNavigationBarItem _buildNavItem(IconData icon, String label, int index) {
-  return BottomNavigationBarItem(
-    icon: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: _selectedIndex == index ? Colors.amber : Colors.transparent,
-        borderRadius: BorderRadius.circular(30),
+
+  BottomNavigationBarItem _buildNavItem(
+    IconData icon,
+    String label,
+    int index,
+  ) {
+    return BottomNavigationBarItem(
+      icon: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        decoration: BoxDecoration(
+          color: _selectedIndex == index ? Colors.amber : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Icon(icon, size: 28, color: Colors.black),
       ),
-      child: Icon(icon, size: 28, color: Colors.black),
-    ),
-    label: label,
-  );
-}
+      label: label,
+    );
+  }
 }
 
-
-
-
-class UpperCaseTextFormatter extends TextInputFormatter{
+class UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     return newValue.copyWith(
       text: newValue.text.toUpperCase(),
       selection: newValue.selection,
