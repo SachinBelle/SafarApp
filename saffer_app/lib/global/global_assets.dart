@@ -1,3 +1,7 @@
-import 'dart:typed_data';
+library global;
 
-Map<String,Uint8List> preloadedAssets={};
+String phone_number="";
+var user_name="";
+void setPhoneNumber(String value) {
+  phone_number = value;
+}

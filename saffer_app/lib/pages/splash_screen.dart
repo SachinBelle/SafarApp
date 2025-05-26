@@ -3,7 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:saffer_app/pages/uid_list_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:saffer_app/global/global_assets.dart' as global;
 import 'package:saffer_app/pages/uid_page.dart';
 import 'package:saffer_app/student/parent_signup.dart';
  // import your UID list page
@@ -55,6 +55,8 @@ class _SplashScreenState extends State<SplashScreen>
     // User logged in, get phone (if needed)
     final phone = user.phone;
 
+  global.setPhoneNumber(phone.toString());
+  print(global.phone_number);
     // Fetch user_linked_uids from user_data table
     try {
       final response = await Supabase.instance.client

@@ -52,7 +52,7 @@ class _LoadingPageState extends State<LoadingPage> with TickerProviderStateMixin
               .getPublicUrl(fullPath);
 
           // Store in global map
-          preloadedAssets[fullPath] = publicUrl as Uint8List;
+          
         }
       }
 
