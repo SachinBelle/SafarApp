@@ -266,7 +266,7 @@ class _UIDPageState extends State<UIDPage> {
 
     if (driver == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Center(child: Text("No driver found with this UID"))),
+        const SnackBar(content: Text("No driver found with this UID")),
       );
       return;
     }
@@ -300,7 +300,7 @@ class _UIDPageState extends State<UIDPage> {
     );
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Center(child: Text("Error: ${e.toString()}",style: TextStyle(color: Colors.red),))),
+      SnackBar(content: Text("Error: ${e.toString()}")),
     );
   }
 },
