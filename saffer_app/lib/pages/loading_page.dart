@@ -1,9 +1,8 @@
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:saffer_app/global/global_assets.dart'; // Make sure this imports the global map
+// Make sure this imports the global map
 
 class LoadingPage extends StatefulWidget {
   final String bucketName;

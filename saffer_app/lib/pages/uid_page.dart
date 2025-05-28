@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:saffer_app/global/global_assets.dart' as global;
 import 'package:saffer_app/pages/profile_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:saffer_app/pages/track_bus.dart';
+import 'package:saffer_app/pages/uid_list_view.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 
 class UIDPage extends StatefulWidget {
+  
   const UIDPage({super.key});
 
   @override
@@ -107,13 +111,7 @@ class _UIDPageState extends State<UIDPage> {
                         ),
                         child: Column(
                           children: [
-                              ElevatedButton(onPressed: (){
-                              Navigator.push(
-                                context,
-                               MaterialPageRoute(builder: (_)=>TrackBus())
-                              );
-      
-                              }, child:Text("Track Bus")),
+                              
                              Text(
                               'No Saved Operator Found',
                               style: GoogleFonts.albertSans(
@@ -236,21 +234,78 @@ class _UIDPageState extends State<UIDPage> {
                     ),
                     child: Center(
                       child: ElevatedButton(
-                        onPressed: () {
-                          final uid = _uidControllers.map((c) => c.text).join();
-                          if (uid.length == 6) {
-                            // Process UID
-                            print('Entered UID: $uid');
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Center(
-                                  child: Text("Please enter full 6-digit UID"),
-                                ),
-                              ),
-                            );
-                          }
-                        },
+                     onPressed: () async {
+  final uid = _uidControllers.map((c) => c.text).join().toUpperCase();
+
+  if (uid.length != 6) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Center(child: Text("Please enter full 6-character UID")),
+      ),
+    );
+    return;
+  }
+
+  try {
+    final supabase = Supabase.instance.client;
+    final currentUser = supabase.auth.currentUser;
+
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User not logged in")),
+      );
+      return;
+    }
+
+    // Check if the UID exists in drivers_data
+    final driver = await supabase
+        .from('drivers_data')
+        .select()
+        .eq('uid', uid)
+        .maybeSingle();
+
+    if (driver == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Center(child: Text("No driver found with this UID"))),
+      );
+      return;
+    }
+
+    // Fetch current list of linked UIDs
+    final userRow = await supabase
+        .from('user_data')
+        .select('user_linked_uid')
+        .eq('user_uid', currentUser.id)
+        .maybeSingle();
+
+    List<dynamic> existingUids = userRow?['user_linked_uid'] ?? [];
+
+    // Convert to List<String> safely
+    List<String> uidList = existingUids.cast<String>();
+
+    if (!uidList.contains(uid)) {
+      uidList.add(uid);
+
+      // Update Supabase user record
+      await supabase.from('user_data').update({
+        'user_linked_uid': uidList,
+      }).eq('user_uid', currentUser.id);
+    }
+
+    // Navigate to list page with updated UID list
+    global.linked_user_uid = uidList;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => UidListPage(uidList: uidList,)),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Center(child: Text("Error: ${e.toString()}",style: TextStyle(color: Colors.red),))),
+    );
+  }
+},
+
+
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,

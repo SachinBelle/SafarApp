@@ -178,7 +178,7 @@ class _UserSignUpState extends State<UserSignUp> {
       // User does not exist, insert new record
       await supabase.from('user_data').insert({
         'user_name': nameController.text,
-        'phone_number': phoneController.text,
+        'phone_number': "91${phoneController.text}",
       });
     }
 
