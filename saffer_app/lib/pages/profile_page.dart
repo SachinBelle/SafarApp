@@ -48,7 +48,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                         isRepeatingAnimation: true,
                         animatedTexts: [
                           TypewriterAnimatedText(
-                            'Hello ${global.user_name}',
+                            'Hello ${global.userName}',
                             textStyle: GoogleFonts.staatliches(
                               fontSize: 40,
                               color: Colors.white,
@@ -81,7 +81,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                             style: GoogleFonts.albertSans(fontSize: 20),
                           ),
                           Text(
-                            '+${global.phone_number}',
+                            '+${global.phoneNumber}',
                             style: GoogleFonts.albertSans(fontSize: 20),
                           ),
                         ],

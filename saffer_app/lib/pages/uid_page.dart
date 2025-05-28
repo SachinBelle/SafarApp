@@ -293,7 +293,7 @@ class _UIDPageState extends State<UIDPage> {
     }
 
     // Navigate to list page with updated UID list
-    global.linked_user_uid = uidList;
+    global.linkedUserUid = uidList;
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => UidListPage(uidList: uidList,)),

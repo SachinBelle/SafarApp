@@ -38,18 +38,19 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UserSignUp()));
       return;
     }
+    global.setUserId(user.id);
 
     try {
       final user_data=await supabase.from("user_data").select('user_name,phone_number,user_linked_uid').eq('user_uid', user.id).maybeSingle();
     if(user_data==null) return; 
-    print(user_data['user_name']);
     
-
+    
       global.setUserName(user_data['user_name']);
       global.setPhoneNumber(user_data['phone_number']);
 
 
-      global.phone_number=user_data['phone_number'];
+
+    
       
 
       final userLinkedUids = user_data['user_linked_uid'];

@@ -1,13 +1,17 @@
 library;
 
-String phone_number="N/A";
-String user_name="N/A";
-List<String> linked_user_uid=[];
+String phoneNumber="N/A";
+String userName="N/A";
+String userId="";
+List<String> linkedUserUid=[];
 
 void setPhoneNumber(String value) {
-  phone_number = value;
+  phoneNumber = value;
 }
 
 void setUserName(String value){
-  user_name=value;
+  userName=value;
+}
+void setUserId(String value){
+  userId=value;
 }

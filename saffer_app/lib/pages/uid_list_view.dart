@@ -3,6 +3,7 @@ import 'package:saffer_app/pages/uid_page.dart';
 import 'package:saffer_app/student/parent_signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:saffer_app/pages/profile_page.dart';
+import 'package:saffer_app/global/global_assets.dart' as global;
 
 
 class UidListPage extends StatefulWidget {
@@ -26,27 +27,35 @@ class _UidListPageState extends State<UidListPage> {
   }
 
   Future<void> fetchDriverData() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UserSignUp()));
-      return;
-    }
-    try {
+   
+     List<dynamic>? linkedUids;
+    if(widget.uidList.isEmpty){
+
+      try {
       final response = await Supabase.instance.client
           .from('user_data')
           .select('user_linked_uid')
-          .eq('user_uid', user.id)
+          .eq('user_uid',global.userId )
           .maybeSingle();
 
-      final List<dynamic>? linkedUids = response?['user_linked_uid'];
-
+       linkedUids= response?['user_linked_uid'];
+      }catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Center(
+        child: Text("Got an error $e",style: TextStyle(color: Colors.red),),
+      )));
+    }}
+    else{
+      linkedUids=widget.uidList;
+    }
+    
         
         
       final List<String> uidList = linkedUids?.map((e) => e.toString()).toList() ?? [];
       if (uidList.isEmpty) {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UIDPage()));
       }
-      final driver_data = await Supabase.instance.client
+      try{
+        final driver_data = await Supabase.instance.client
           .from('drivers_data')
           .select()
           .filter('uid','in', linkedUids);
@@ -55,7 +64,8 @@ class _UidListPageState extends State<UidListPage> {
         driverData = driver_data;
         isLoading = false;
       });
-    } catch (e) {
+
+      } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Center(
         child: Text("Got an error $e",style: TextStyle(color: Colors.red),),
       )));
@@ -76,22 +86,24 @@ class _UidListPageState extends State<UidListPage> {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         title: SizedBox(
-          height: 80,
+          height: 100,
           width: 160,
           child: Image.asset('assets/logo/safarword.png'),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(226, 206, 230, 224),
+        backgroundColor: const Color.fromARGB(255, 187, 201, 225),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 15),
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    // margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.asset(
@@ -103,14 +115,69 @@ class _UidListPageState extends State<UidListPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text("Select Transport Operator", style: Theme.of(context).textTheme.titleMedium),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20,top: 35),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      
+                      children: [
+                        Text("Select Transport Operator", style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontSize: 24,
+                          fontFamily: 'albertSans'
+                        )),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   ...driverData.map((driver) => Card(
                         child: ListTile(
-                          title: Text("Name: ${driver['driver_name'] ?? 'N/A'}",style: Theme.of(context).textTheme.titleMedium,),
-                          subtitle: Text("Organization name: ${driver['organization_name'] ?? 'N/A'}",),
-                        ),
-                      )),
+  tileColor: Color.fromRGBO(217, 217, 217, 0.56),
+  leading: ClipRRect(
+    borderRadius: BorderRadius.circular(20),
+    child: Image.network(
+      "https://putmfvonnimjvavnnbwm.supabase.co/storage/v1/object/public/profile.photos/driver_profile_photo/bus_default.jpg",
+      fit: BoxFit.cover,
+      width: 45,
+      height: 45,
+    ),
+  ),
+  title: Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          Text("Name: ", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15)),
+          Text(driver['driver_name'], style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
+        ],
+      ),
+       Row(
+        children: [
+          Text("School org: ", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15)),
+          Text(driver['organization_name'], style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
+        ],
+      ),
+      Row(
+        children: [
+          Text("Phone No: ", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15)),
+          Text("+${driver['phone_number']}", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
+        ],
+      ),
+     
+    ],
+  ),
+  trailing: ClipRRect(
+      child: Image.asset(
+        width: 80,
+        height: 70,
+        "assets/icons/locate_icon.png",
+        fit: BoxFit.contain,
+      ),
+    ),
+ 
+)
+                      ),
+                      ),
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
