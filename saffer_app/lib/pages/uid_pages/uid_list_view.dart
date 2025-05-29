@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:saffer_app/pages/uid_page.dart';
+import 'package:saffer_app/pages/uid_pages/add_uid_box.dart';
+import 'package:saffer_app/pages/uid_pages/uid_page.dart';
 import 'package:saffer_app/student/parent_signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:saffer_app/pages/profile_page.dart';
+import 'package:saffer_app/pages/profile_page/profile_page.dart';
 import 'package:saffer_app/global/global_assets.dart' as global;
 
 
@@ -131,20 +132,48 @@ class _UidListPageState extends State<UidListPage> {
                   const SizedBox(height: 20),
                   ...driverData.map((driver) => Card(
                         child: ListTile(
-  tileColor: Color.fromRGBO(217, 217, 217, 0.56),
-  leading: ClipRRect(
+                          onTap: (){
+
+                          },
+  tileColor: Color.from(alpha: 0.557, red: 0.851, green: 0.851, blue: 0.851),
+  leading:GestureDetector(
+  onTap: () {
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: const Color.fromARGB(0, 0, 0, 0),
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: // Optional: allows zoom and pan
+             ClipOval(
+              child: Image.network(
+          "https://putmfvonnimjvavnnbwm.supabase.co/storage/v1/object/public/profile.photos/driver_profile_photo/bus_default.jpg",
+          width: MediaQuery.of(context).size.width * 0.6,
+          height: MediaQuery.of(context).size.width * 0.6,
+          fit: BoxFit.cover,
+        ),
+            ),
+          
+        ),
+      ),
+    );
+  },
+  child: ClipRRect(
     borderRadius: BorderRadius.circular(20),
     child: Image.network(
       "https://putmfvonnimjvavnnbwm.supabase.co/storage/v1/object/public/profile.photos/driver_profile_photo/bus_default.jpg",
-      fit: BoxFit.cover,
-      width: 45,
-      height: 45,
+      fit: BoxFit.contain,
+      width: 48.5,
+      height: 70,
     ),
   ),
+),
+
   title: Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
+     
       Row(
         children: [
           Text("Name: ", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15)),
@@ -153,38 +182,83 @@ class _UidListPageState extends State<UidListPage> {
       ),
        Row(
         children: [
-          Text("School org: ", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15)),
-          Text(driver['organization_name'], style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
+           
+        
+          Text("Orgnization Name: ", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15)),
+           Expanded(
+             child: Text(
+                formatOrganizationName(driver['organization_name']),
+                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17),
+              
+                  // optional
+               ),
+           ),
+             
         ],
       ),
       Row(
         children: [
           Text("Phone No: ", style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15)),
           Text("+${driver['phone_number']}", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
+       
         ],
       ),
      
     ],
   ),
-  trailing: ClipRRect(
-      child: Image.asset(
-        width: 80,
-        height: 70,
-        "assets/icons/locate_icon.png",
-        fit: BoxFit.contain,
-      ),
-    ),
+  // trailing: ClipRRect(
+  //     child: Image.asset(
+  //       width: 5,
+  //       height: 70,
+  //       "assets/icons/locate_icon.png",
+  //       fit: BoxFit.contain,
+  //     ),
+  //   ),
  
 )
                       ),
                       ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () {
-                       // Go back to UID entry page
-                    },
-                    child: const Text("ADD ANOTHER UID"),
-                  )
+                const SizedBox(height: 15,),
+          ClipRRect(
+            borderRadius: BorderRadiusGeometry.circular(10),
+            child: Card(
+              child: ListTile(
+                onTap: () {
+                  showDialog(
+                    context: context, builder:(_)=>Dialog(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: GestureDetector(
+                        onTap: ()=>Navigator.of(context).pop(),
+                        child: UidBox(),
+                      ),
+
+                    ));
+              
+                },
+                
+                  tileColor: Color.fromARGB(228, 217, 217, 217),
+                   title: Text("Click to Join other Transport Operator through UID",style: TextStyle(
+                    fontWeight: FontWeight.w300, fontSize: 15
+                   ),),
+                  leading:
+                   ClipRRect(
+                    child: Image.asset(
+                      width: 50,
+                      height: 50,
+                      "assets/icons/add_icon.png",
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+              
+              
+              ),
+            ),
+          ),
+
+                      
+
+            
+                 
                 ],
               ),
             ),
@@ -222,4 +296,20 @@ class _UidListPageState extends State<UidListPage> {
       label: label,
     );
   }
+}
+
+String formatOrganizationName(String orgName, {int wordsPerLine = 2}) {
+  final words = orgName.split(' ');
+  final buffer = StringBuffer();
+
+  for (int i = 0; i < words.length; i++) {
+    buffer.write(words[i]);
+    if ((i + 1) % wordsPerLine == 0 && i != words.length - 1) {
+      buffer.write('\n');
+    } else {
+      buffer.write(' ');
+    }
+  }
+
+  return buffer.toString().trim();
 }

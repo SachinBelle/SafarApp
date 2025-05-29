@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:saffer_app/common/methods/cmethods.dart';
-import 'package:saffer_app/pages/uid_page.dart';
+import 'package:saffer_app/pages/uid_pages/uid_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // import 'package:flutter/services.dart';

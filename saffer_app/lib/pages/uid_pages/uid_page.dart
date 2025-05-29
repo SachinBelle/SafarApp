@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:saffer_app/global/global_assets.dart' as global;
-import 'package:saffer_app/pages/profile_page.dart';
+import 'package:saffer_app/pages/profile_page/profile_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:saffer_app/pages/uid_list_view.dart';
+import 'package:saffer_app/pages/uid_pages/uid_list_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 

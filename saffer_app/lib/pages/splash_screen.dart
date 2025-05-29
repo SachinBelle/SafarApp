@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:saffer_app/pages/uid_page.dart';
-import 'package:saffer_app/pages/uid_list_view.dart';
+import 'package:saffer_app/pages/uid_pages/uid_page.dart';
+import 'package:saffer_app/pages/uid_pages/uid_list_view.dart';
 import 'package:saffer_app/student/parent_signup.dart';
 import 'package:saffer_app/global/global_assets.dart' as global;
 
@@ -41,19 +41,19 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     global.setUserId(user.id);
 
     try {
-      final user_data=await supabase.from("user_data").select('user_name,phone_number,user_linked_uid').eq('user_uid', user.id).maybeSingle();
-    if(user_data==null) return; 
+      final userData=await supabase.from("user_data").select('user_name,phone_number,user_linked_uid').eq('user_uid', user.id).maybeSingle();
+    if(userData==null) return; 
     
     
-      global.setUserName(user_data['user_name']);
-      global.setPhoneNumber(user_data['phone_number']);
+      global.setUserName(userData['user_name']);
+      global.setPhoneNumber(userData['phone_number']);
 
 
 
     
       
 
-      final userLinkedUids = user_data['user_linked_uid'];
+      final userLinkedUids = userData['user_linked_uid'];
 
       final List<dynamic>? linkedUids = userLinkedUids;
 
