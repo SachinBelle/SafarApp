@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:saffer_app/pages/uid_pages/add_uid_box.dart';
 import 'package:saffer_app/pages/uid_pages/uid_page.dart';
-import 'package:saffer_app/student/parent_signup.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:saffer_app/pages/profile_page/profile_page.dart';
 import 'package:saffer_app/global/global_assets.dart' as global;
