@@ -181,6 +181,9 @@ class _UserSignUpState extends State<UserSignUp> {
         'phone_number': "91${phoneController.text}",
       });
     }
+    else{
+      
+    }
 
     // ✅ Store phone number in shared preferences
     final SharedPreferences sharedPreferences =

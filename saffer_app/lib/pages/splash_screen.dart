@@ -42,6 +42,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
     try {
       final userData=await supabase.from("user_data").select('user_name,phone_number,user_linked_uid').eq('user_uid', user.id).maybeSingle();
+      print('Supabase User ID: ${user.id}');
     if(userData==null) return; 
     
     
