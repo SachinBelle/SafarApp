@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:saffer_app/pages/map_page/main_map.dart';
+
 // import 'package:saffer_app/pages/uid_list_view.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,18 +28,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      // home: const MainMap(),
+      home: SplashScreen(),
     
       
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 29, 24, 24), //have changed the seed color
-          primary: const Color(0xFFCFDEF6),
+          seedColor: const Color(0xFFCFDEF6), //have changed the seed color
+          primary: const Color.fromRGBO(42, 42, 42, 1),
+          secondary: const Color(0xFFCFDEF6),
         ),
         textTheme: const TextTheme(
           // Customize your text styles here if needed
           titleMedium: TextStyle(fontWeight: FontWeight.bold,fontSize: 30,fontFamily:"AlbertSans"),
           titleSmall: TextStyle(fontWeight: FontWeight.bold,fontSize: 15,fontFamily: "AlbertSans"),
+          labelSmall: TextStyle(fontSize: 15,fontFamily: "AlbertSans",fontWeight: FontWeight.w400)
         ),
       ),
     );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:saffer_app/pages/InitialUserPage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:saffer_app/pages/uid_pages/uid_page.dart';
 import 'package:saffer_app/pages/uid_pages/uid_list_view.dart';
-import 'package:saffer_app/student/parent_signup.dart';
-import 'package:saffer_app/global/global_assets.dart' as global;
+import 'package:saffer_app/pages/UserSignUp.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
-   final supabase = Supabase.instance.client;
+  final supabase = Supabase.instance.client;
   late AnimationController _animationController;
 
   @override
@@ -29,49 +29,43 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _animationController.forward();
 
     final prefs = await SharedPreferences.getInstance();
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = supabase.auth.currentUser;
 
     await Future.delayed(_animationController.duration!);
     if (!mounted) return;
 
     if (user == null) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UserSignUp()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const  Initialuserpage()));
       return;
     }
-    global.setUserId(user.id);
 
     try {
-      final userData=await supabase.from("user_data").select('user_name,phone_number,user_linked_uid').eq('user_uid', user.id).maybeSingle();
-      print('Supabase User ID: ${user.id}');
-    if(userData==null) return; 
-    
-    
-      global.setUserName(userData['user_name']);
-      global.setPhoneNumber(userData['phone_number']);
+      final userData = await supabase
+          .from("user_data")
+          .select('user_name, phone_number, user_linked_uid')
+          .eq('user_uid', user.id)
+          .maybeSingle();
 
+      if (userData == null) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const  Initialuserpage ()));
+        return;
+      }
 
-
-    
-      
-
-      final userLinkedUids = userData['user_linked_uid'];
-
-      final List<dynamic>? linkedUids = userLinkedUids;
-
-       
-      final List<String> uidList = linkedUids?.map((e) => e.toString()).toList() ?? [];
-
+      // Optional: You can store these locally if needed
+      final userName = userData['user_name'] as String?;
+      final phoneNumber = userData['phone_number'] as String?;
+      final List<String> uidList = (userData['user_linked_uid'] as List?)?.map((e) => e.toString()).toList() ?? [];
 
       if (uidList.isEmpty) {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UIDPage()));
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => UidListPage(uidList: uidList)),
+          MaterialPageRoute(builder: (_) => UidListPage(uidList: uidList,)),
         );
       }
     } catch (error) {
-      debugPrint('Error fetching user_linked_uid: $error');
+      debugPrint('Error fetching user data: $error');
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UIDPage()));
     }
   }

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:saffer_app/global/global_assets.dart' as global;
+import 'package:saffer_app/pages/InitialUserPage.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 class StudentProfilePage extends StatefulWidget {
   const StudentProfilePage({super.key});
 
@@ -15,11 +18,59 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   bool isAccountSelected = false;
   bool isSettingsSelected = false;
   bool isLogoutSelected = false;
+ String UserName="N/A";
+ String PhoneNumber="N/A";
                             
-  
+  @override
+  void initState() {
+    super.initState();
+   getUserDataFromSupabase();
+
+
+  }
+
+ Future<void> getUserDataFromSupabase() async {
+  final supabase = Supabase.instance.client;
+
+  final currentUser = supabase.auth.currentUser;
+
+  if (currentUser == null) {
+    print("User not logged in.");
+    return;
+  }
+
+  final userId = currentUser.id; // This is the UUID (same as user_uid in your table)
+
+  final response = await supabase
+      .from('user_data')
+      .select('user_name, phone_number')
+      .eq('user_uid', userId)
+      .single();
+
+  if (response != null) {
+    final userName = response['user_name'] as String;
+    final phoneNumber = response['phone_number'] as String;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("UserName", userName);
+    await prefs.setString("phone_number", phoneNumber);
+
+    print("User data saved: $userName, $phoneNumber");
+  } else {
+    print("User data not found in user_data table.");
+  }
+}
+ 
 
   @override
   Widget build(BuildContext context) {
+     Future<void> logout() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.remove('phone_number');
+  await prefs.remove("UserName");
+  await Supabase.instance.client.auth.signOut();
+  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>Initialuserpage()));
+}
     return Scaffold(
       backgroundColor: const Color(0xFFCFDEF6),
       body: SafeArea(
@@ -48,7 +99,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                         isRepeatingAnimation: true,
                         animatedTexts: [
                           TypewriterAnimatedText(
-                            'Hello ${global.userName}',
+                            'Hello $UserName',
                             textStyle: GoogleFonts.staatliches(
                               fontSize: 40,
                               color: Colors.white,
@@ -81,25 +132,13 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                             style: GoogleFonts.albertSans(fontSize: 20),
                           ),
                           Text(
-                            '+${global.phoneNumber}',
+                            '+91 $PhoneNumber',
                             style: GoogleFonts.albertSans(fontSize: 20),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Email',
-                            style: GoogleFonts.albertSans(fontSize: 20),
-                          ),
-                          Text(
-                            'XXXXXXXXXX',
-                            style: GoogleFonts.albertSans(fontSize: 20),
-                          ),
-                        ],
-                      ),
+                     
+                     
                     ],
                   ),
                 ),
@@ -117,17 +156,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                       // Dark Mode / Day Mode Toggle
                       _buildModeToggle(),
 
-                      _buildOption(
-                        icon: Icons.person_outline,
-                        toggledIcon: Icons.person,
-                        title: 'Account Setting',
-                        isToggled: isAccountSelected,
-                        onTap: () {
-                          setState(() {
-                            isAccountSelected = !isAccountSelected;
-                          });
-                        },
-                      ),
+                      
                       _buildOption(
                         icon: Icons.settings_outlined,
                         toggledIcon: Icons.settings,
@@ -145,9 +174,31 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                         title: 'Log out',
                         isToggled: isLogoutSelected,
                         onTap: () {
+                          showDialog(builder: (context) {
+                           return SizedBox(
+                              width: 100,
+                              height: 100,
+                              child:Column(
+                                children: [
+                                  Text("sure to log out"),
+                                  Row(
+                                    children: [
+                                      TextButton(onPressed: (){
+                                        logout();
+                                      }, child: Text("Yes")),
+                                       TextButton(onPressed: (){
+                                        Navigator.of(context).pop();
+                                      }, child: Text("No"))
+                                    ],
+                                  )
+                                ],
+                              ) ,
+                              );}
+                          , context: context,);
                           setState(() {
                             isLogoutSelected = !isLogoutSelected;
                           });
+                          
                         },
                       ),
                     ],

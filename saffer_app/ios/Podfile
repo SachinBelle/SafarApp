@@ -1,0 +1,2 @@
+platform :ios, '14.0'
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
