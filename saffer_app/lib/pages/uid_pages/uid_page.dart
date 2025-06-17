@@ -235,7 +235,7 @@ class _UIDPageState extends State<UIDPage> {
                     child: Center(
                       child: ElevatedButton(
                      onPressed: () async {
-  final uid = _uidControllers.map((c) => c.text).join().toUpperCase();
+final uid = _uidControllers.map((c) => c.text.trim()).join().toUpperCase();
 
   if (uid.length != 6) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -261,13 +261,15 @@ class _UIDPageState extends State<UIDPage> {
     final driver = await supabase
         .from('drivers_data')
         .select()
-        .eq('uid', uid)
+        .ilike('uid', uid)
         .maybeSingle();
 
     if (driver == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("No driver found with this UID")),
       );
+      final currentUser = supabase.auth.currentUser;
+print("Current user: $currentUser");
       return;
     }
 

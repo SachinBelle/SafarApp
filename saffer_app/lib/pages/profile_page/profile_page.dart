@@ -47,18 +47,14 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       .eq('user_uid', userId)
       .single();
 
-  if (response != null) {
-    final userName = response['user_name'] as String;
-    final phoneNumber = response['phone_number'] as String;
+  final userName = response['user_name'] as String;
+  final phoneNumber = response['phone_number'] as String;
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("UserName", userName);
-    await prefs.setString("phone_number", phoneNumber);
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString("UserName", userName);
+  await prefs.setString("phone_number", phoneNumber);
 
-    print("User data saved: $userName, $phoneNumber");
-  } else {
-    print("User data not found in user_data table.");
-  }
+  print("User data saved: $userName, $phoneNumber");
 }
  
 

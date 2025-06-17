@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:saffer_app/pages/uid_pages/uid_page.dart';
 import 'package:saffer_app/pages/uid_pages/uid_list_view.dart';
-import 'package:saffer_app/pages/UserSignUp.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

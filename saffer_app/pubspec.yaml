@@ -47,8 +47,10 @@ dependencies:
   get:
   sign_in_with_apple: ^7.0.1
   google_maps_flutter: ^2.12.2
+  geolocator:
+  permission_handler: 
 
-  flutter_svg: ^2.1.0
+  flutter_svg: 
    
 
       
@@ -86,7 +88,8 @@ flutter:
     - assets/logo/safarword.png
     - assets/icons/
     - assets/logo/
-    - assets/logo/safar_app_bar_logo.svg
+    
+    - assets/map_styles/
 
     
 
