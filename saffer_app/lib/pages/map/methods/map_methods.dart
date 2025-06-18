@@ -4,7 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import "package:http/http.dart" as http;
 
-Future<List<LatLng>> getRoutePolyline({
+Future<Map<String, dynamic>> getRoutePolyline({
   required LatLng origin,
   required LatLng destination,
   required String apiKey,
@@ -16,12 +16,29 @@ Future<List<LatLng>> getRoutePolyline({
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    final points = data['routes'][0]['overview_polyline']['points'];
-    return decodePolyline(points);
+
+    if (data['routes'] != null && data['routes'].isNotEmpty) {
+      final route = data['routes'][0];
+      final leg = route['legs'][0];
+
+      final distanceText = leg['distance']['text'];
+      final durationText = leg['duration']['text'];
+      final points = route['overview_polyline']['points'];
+      final polyline = decodePolyline(points);
+
+      return {
+        'polyline': polyline,
+        'distance': distanceText,
+        'duration': durationText,
+      };
+    } else {
+      throw Exception('No route found');
+    }
   } else {
     throw Exception('Failed to load directions');
   }
 }
+
 
 List<LatLng> decodePolyline(String encoded) {
   List<LatLng> polyline = [];
@@ -56,3 +73,6 @@ List<LatLng> decodePolyline(String encoded) {
 
   return polyline;
 }
+
+
+

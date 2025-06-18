@@ -40,9 +40,10 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: const TextTheme(
           // Customize your text styles here if needed
-          titleMedium: TextStyle(fontWeight: FontWeight.bold,fontSize: 30,fontFamily:"AlbertSans"),
-          titleSmall: TextStyle(fontWeight: FontWeight.bold,fontSize: 15,fontFamily: "AlbertSans"),
-          labelSmall: TextStyle(fontSize: 15,fontFamily: "AlbertSans",fontWeight: FontWeight.w400)
+          titleLarge: TextStyle(fontWeight: FontWeight.bold,fontSize: 24,fontFamily: "AlbertSans"),
+          titleMedium: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,fontFamily:"AlbertSans"),
+          titleSmall: TextStyle(fontWeight: FontWeight.w500,fontSize: 15,fontFamily: "AlbertSans"),
+          labelSmall: TextStyle(fontSize: 15,fontFamily: "AlbertSans",fontWeight: FontWeight.w400),
         ),
       ),
     );

@@ -51,6 +51,8 @@ dependencies:
   permission_handler: 
 
   flutter_svg: 
+  bloc: ^9.0.0
+  flutter_bloc: ^9.1.1
    
 
       
@@ -88,6 +90,7 @@ flutter:
     - assets/logo/safarword.png
     - assets/icons/
     - assets/logo/
+    - assets\icons\Bus_white_icon.svg
     
     - assets/map_styles/
 
