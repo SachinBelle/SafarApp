@@ -28,7 +28,7 @@ class _LoadingPageState extends State<LoadingPage> with TickerProviderStateMixin
   void initState() {
     super.initState();
     _initAnimation();
-    _loadAllPaths();
+   
   }
 
   void _initAnimation() {

@@ -34,9 +34,9 @@ class MyApp extends StatelessWidget {
       
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFCFDEF6), //have changed the seed color
+          seedColor: Color.fromRGBO(201, 217, 237, 1), //have changed the seed color
           primary: const Color.fromRGBO(42, 42, 42, 1),
-          secondary: const Color(0xFFCFDEF6),
+          secondary: Color.fromRGBO(201, 217, 237, 1),
         ),
         textTheme: const TextTheme(
           // Customize your text styles here if needed

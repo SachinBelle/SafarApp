@@ -88,11 +88,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               height: 100,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white,
+                color: const Color.fromARGB(0, 255, 253, 253),
                 boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))],
               ),
-              child: ClipOval(
-                child: Image.asset('assets/logo/slogo.png', fit: BoxFit.cover),
+              child: Center(
+                child: ClipOval(
+                  child: Image.asset('assets/logo/slogo.png', fit: BoxFit.contain),
+                ),
               ),
             ),
             const SizedBox(height: 15),

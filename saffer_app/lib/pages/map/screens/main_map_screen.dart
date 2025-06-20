@@ -130,8 +130,7 @@ void _subscribeToDriverLocation() {
 ),
       callback: (payload) {
         final newData = payload.newRecord;
-        if (newData != null &&
-            newData['latitude'] != null &&
+        if (newData['latitude'] != null &&
             newData['longitude'] != null) {
           final latitude = (newData['latitude'] as num).toDouble();
           final longitude = (newData['longitude'] as num).toDouble();
@@ -555,7 +554,7 @@ void _subscribeToDriverLocation() {
                       child: Padding(
                         padding: const EdgeInsets.all(12), // Optional to center nicely
                         child: SvgPicture.asset(
-                          "assets/icons/Bus_whiteIcon.svg",
+                          "assets/icons/street-view-person.svg",
                           fit: BoxFit.contain,
                           color: Colors.white, // 👈 Force it visible on black background
                         ),
