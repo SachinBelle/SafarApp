@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get_connect/http/src/http/interface/request_base.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:saffer_app/global/global_assets.dart' as global;
 
